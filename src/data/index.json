@@ -1,0 +1,166 @@
+{
+    "AdminUserAcct": [
+        {
+            "adminUserId": 1,
+            "userType": "admin",
+            "userName": "admin",
+            "email": "admin@example.com",
+            "password": "Admin1234$",
+            "profileImage": null,
+            "createdAt": "30/12/2023"
+        }
+    ],
+    "userAcct": [
+        {
+            "userId": 1,
+            "userType": "regular",
+            "userName": "henryAde",
+            "firstName": "Henry",
+            "lastName": "Adedugba",
+            "email": "henryadedugba@gmail.com",
+            "password": "Henry1234$",
+            "profileImage": null,
+            "profileTheme": null,
+            "createdAt": "30/12/2023",
+            "storeId": null
+        },
+        {
+            "userId": 2,
+            "userType": "regular",
+            "userName": "charlesAde",
+            "firstName": "Charles",
+            "lastName": "Adedugba",
+            "email": "charlesadedugba@gmail.com",
+            "password": "Charles1234$",
+            "profileImage": null,
+            "profileTheme": null,
+            "createdAt": "30/12/2023",
+            "storeId": null
+        },
+        {
+            "userId": 3,
+            "userType": "seller",
+            "userName": "jovini",
+            "firstName": "Joy",
+            "lastName": "Njoku",
+            "email": "joynjoku@gmail.com",
+            "password": "jovini1234$",
+            "profileImage": null,
+            "profileTheme": null,
+            "createdAt": "30/12/2023",
+            "storeId": 1
+        }
+    ],
+    "store": [
+        {
+            "name": "Jovini creations",
+            "userId": 3,
+            "storeId": 1,
+            "createdAt": "30/12/2023",
+            "location": "No. 9, Kola street, Fojol, Obantoko, Abeokuta, Ogun state",
+            "categories": [
+                {
+                    "name": "Jovini Category 1",
+                    "createdAt": "30/12/2023"
+                },
+                {
+                    "name": "Jovini Category 2",
+                    "createdAt": "30/12/2023"
+                }
+            ]
+        },
+        {
+            "name": "Henry's Empire",
+            "userId": 1,
+            "storeId": 2,
+            "createdAt": "30/12/2023",
+            "location": "No. 14, Olorunfunmi street, Pedro, Gbagada, Lagos state",
+            "categories": [
+                {
+                    "name": "Henry Category 1",
+                    "createdAt": "30/12/2023"
+                },
+                {
+                    "name": "Henry Category 2",
+                    "createdAt": "30/12/2023"
+                },
+                {
+                    "name": "Henry Category 3",
+                    "createdAt": "30/12/2023"
+                }
+            ]
+        }
+    ],
+    "product": [
+        {
+            "prodId": 1,
+            "name": "Product 1",
+            "price": 19.99,
+            "description": "Description of Product 1",
+            "quantity": 100,
+            "category": "Jovini Category 1",
+            "storeId": 1,
+            "userId": 3 
+        },
+        {
+            "prodId": 2,
+            "name": "Product 2",
+            "price": 29.99,
+            "description": "Description of Product 2",
+            "quantity": 50,
+            "category": "Jovini Category 1",
+            "storeId": 1,
+            "userId": 3 
+        },
+        {
+            "prodId": 3,
+            "name": "Product 3",
+            "price": 14.99,
+            "description": "Description of Product 3",
+            "quantity": 75,
+            "category": "Jovini Category 2",
+            "storeId": 1,
+            "userId": 3 
+        },
+        {
+            "prodId": 4,
+            "name": "Product 4",
+            "price": 39.99,
+            "description": "Description of Product 4",
+            "quantity": 30,
+            "category": "Jovini Category 2",
+            "storeId": 1,
+            "userId": 3 
+        },
+        {
+            "prodId": 5,
+            "name": "Product 5",
+            "price": 19.99,
+            "description": "Description of Product 5",
+            "quantity": 100,
+            "category": "Henry Category 1",
+            "storeId": 2,
+            "userId": 1 
+        },
+        {
+            "prodId": 6,
+            "name": "Product 6",
+            "price": 29.99,
+            "description": "Description of Product 6",
+            "quantity": 50,
+            "category": "Henry Category 2",
+            "storeId": 2,
+            "userId": 1 
+        },
+        {
+            "prodId": 7,
+            "name": "Product 7",
+            "price": 14.99,
+            "description": "Description of Product 7",
+            "quantity": 75,
+            "category": "Henry Category 3",
+            "storeId": 2,
+            "userId": 1 
+        }
+    ]
+}

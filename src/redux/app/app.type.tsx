@@ -1,0 +1,3 @@
+export const DARK_MODE = 'DARK_MODE';
+export const STORE_TABLE_ITEM = 'STORE_TABLE_ITEM';
+export const RESET_APP_STATE = 'RESET_APP_STATE';

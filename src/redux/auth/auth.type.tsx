@@ -1,0 +1,3 @@
+export const USER_LOG_STATUS = "USER_LOG_STATUS";
+export const USER_AUTH_DATA = "USER_AUTH_DATA";
+export const RESET_STATE = "RESET_STATE";
