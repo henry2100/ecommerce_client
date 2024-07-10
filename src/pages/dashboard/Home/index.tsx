@@ -76,12 +76,6 @@ const Home = (props: any) => {
         getCurrentPage(pageNumber);
     }
 
-    console.log("filteredCurrentData:", filteredData.slice(indexOfFirstItem, indexOfLastItem));
-    console.log("CurrentData:", currentData);
-    console.log("Products:", products);
-    console.log("showSearch:", props.showSearch);
-    
-
     return (
         <div className={`desktop:px-32 desktop:py-10 px-16 py-8 mobile:p-3 min-h-[90vh] flex ${loading ? 'justify-center items-center' : 'flex-col justify-between gap-12'}`}>
             {loading
