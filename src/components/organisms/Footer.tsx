@@ -89,8 +89,8 @@ const Footer = () => {
     ]
 
     return (
-        <div className='min-h-[60vh] h-fit w-full relative overflow-hidden' id='footer'>
-            <Carousel
+        <div className='min-h-[30vh] h-fit w-full relative overflow-hidden' id='footer'>
+            {/* <Carousel
                 data={carouselData}
                 containerStyle="w-full h-[60vh]"
                 currentItem={currentItem}
@@ -99,7 +99,7 @@ const Footer = () => {
                 autoSlide={true}
                 // slideDirection='backward'
                 slideDuration={3000}
-            />
+            /> */}
             <div className='w-full h-fit bg-BackDrop_d_sm overflow-hidden relative'>
                 <div className={`absolute z-[5] w-full h-full animate-fadeIn ease-in-out`}>
                     <img src={imgThree} alt="carousel_img" className="w-full h-full object-cover object-fit object-center " />

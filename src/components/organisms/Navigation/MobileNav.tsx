@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import AppModal from '../CustomModal';
 import userDefaultIcon from '../../../assets/svg/navIcons/navMenuIcons/user_linear.svg';
-import userIcon_w from '../../../assets//svg/user-white.svg';
-import userIcon_d from '../../../assets//svg/user-black.svg';
+import userIcon_w from '../../../assets/svg/user-white.svg';
+import userIcon_d from '../../../assets/svg/user-black.svg';
+import user_placeholder from '../../../assets/svg/User_2.svg';
 import Toggle from '../../atoms/Toggle';
 import navMenu from 'components/molecules/navMenu';
 import { connect } from 'react-redux';
@@ -13,16 +14,18 @@ import { toggleDarkMode } from '../../../redux/app/app.action';
 import { handleLogout } from 'utils';
 
 const MobileNav = (props) => {
-    const [toggle, setToggle] = useState(false);
-
     const navigate = useNavigate();
 
-    // const handleLogout = () => {
-    //     props.logoutHandler();
-    //     navigate('/dashboard/home');
-    // }
+    const userStatus = props.userLoggedIn;
+    const userEmail = props.userData?.data?.email;
+    const userProfileImg = props.userData?.data?.imageUrl;
 
-    const { navMenuItems } = navMenu(props.user_loggedIn, props.logoutHandler, handleLogout);
+    console.log("userStatus:", {
+        userStatus: userStatus,
+        userData: props.userData?.data?.username
+    });
+
+    const { navMenuItems } = navMenu(props.userLoggedIn, handleLogout);
 
     const handleSideNavClick = (e, item) => {
         if (!item.available) {
@@ -37,24 +40,35 @@ const MobileNav = (props) => {
     return (
         <AppModal
             handleClose={() => props.setShowModal(false)}
-            modalStyle={`${props.darkMode ? 'bg-Primary_800' : 'bg-white'} hidden tablet:block w-2/5 mobile:w-3/4  min-h-screen h-fit z-30 top-0 right-0 animate-slide_left rounded-l-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all`}
+            modalStyle={`${props.darkMode ? 'bg-Primary_800' : 'bg-white'} hidden tablet:block w-2/5 mobile:w-3/4  min-h-screen h-fit z-30 top-0 right-0 animate-slide_left rounded-l-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition ease-in-out duration-500`}
             contentStyle="h-[100vh]"
+            closeBtnStyle='hidden'
         >
             <div className='flex flex-col gap-8 h-full'>
                 <div className='flex items-center gap-5 p-8 pb-2'>
-                    <span className='w-9 h-9 rounded-full border-2 border-Primary overflow-hidden'>
-                        <img src={props.darkMode ? userIcon_w : userIcon_d} alt='user-profile' className='w-full h-full' />
+                    <span className='w-9 h-9 rounded-full border border-Primary overflow-hidden'>
+                        <img src={userStatus
+                            ? userProfileImg
+                                ? userProfileImg
+                                : user_placeholder
+                            : user_placeholder
+                        } alt='user-profile' className='w-full h-full' />
                     </span>
-                    <h4 className={`${props.darkMode ? 'text-Primary' : 'text-PrimaryActive'} font-semibold text-xl`}>Username</h4>
+                    <span className={`${props.darkMode ? 'text-Primary' : 'text-PrimaryActive'} font-semibold`}>
+                        {userStatus
+                            ? <p className='text-xl mobile:text-lg'>{userEmail}</p>
+                            : <p className='text-base mobile:text-sm'>Sign In</p>
+                        }
+                    </span>
                 </div>
                 <div className='flex flex-col gap-5 justify-between h-full px-5 pt-2 pb-12'>
                     <div className={`${props.darkMode ? 'bg-Primary_600' : 'bg-PrimaryDisabled'} flex flex-col gap-1 overflow-hidden rounded-md p-3`}>
                         {navMenuItems.map((item, i) => (
-                            <span 
-                                key={i} 
+                            <span
+                                key={i}
                                 onClick={item.navFunc === null
-                                    ?   (e) => handleSideNavClick(e, item)
-                                    :   item.navFunc
+                                    ? (e) => handleSideNavClick(e, item)
+                                    : item.navFunc
                                 }
                                 className={`${props.darkMode ? 'text-Primary hover:text-PrimaryDisabled hover:bg-PrimaryActive' : 'text-PrimaryActive hover:bg-slate-400 hover:text-white'} flex items-center gap-3 group rounded-md font-normal text-base px-5 py-2 transition-all cursor-pointer  ${item.style}`}
                             >
@@ -84,7 +98,8 @@ const MobileNav = (props) => {
 }
 
 const mapStateToProps = state => ({
-    user_loggedIn: state.auth.user_loggedIn,
+    userLoggedIn: state.auth.user_loggedIn,
+    userData: state.auth.user_authData,
     darkMode: state.app.darkMode
 })
 

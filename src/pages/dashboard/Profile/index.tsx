@@ -10,6 +10,9 @@ import Button from 'components/atoms/Button';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { ToCamelCase, ToSnakeCase } from 'components/atoms/CaseManager';
 
+import userIcon from '../../../assets/svg/navIcons/navMenuIcons/user_bold_pry.svg';
+import userIconSolid from '../../../assets/svg/navIcons/navMenuIcons/user_bold_w.svg';
+
 import addProduct_w from '../../../assets/svg/navIcons/profilePageIcons/white/add_product.svg';
 import addProduct_d from '../../../assets/svg/navIcons/profilePageIcons/primary/add_product.svg';
 
@@ -58,7 +61,7 @@ const Profile = (props) => {
     }
 
     const sideNavData = [
-        { title: 'Profile', style: ``, icon: tagUser_d, iconActive: tagUser_w },
+        { title: 'Profile', style: ``, icon: userIcon, iconActive: userIconSolid },
         { title: 'Order History', style: ``, icon: taskSquare_d, iconActive: taskSquare_w },
         { title: 'Transaction History', style: ``, icon: archiveBook_d, iconActive: archiveBook_w },
         { title: 'My Products', style: `${props.role === 'seller' ? 'block' : 'hidden'}`, icon: productIcon_d, iconActive: productIcon_w },

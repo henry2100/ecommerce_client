@@ -42,7 +42,7 @@ const AppTable: React.FC<TableProps> = ({ columns, data, itemsPerPage, loading, 
 
   return (
     <div className={`relative flex flex-col ${data.length < 10 ? 'min-h-[15vh]' : 'min-h-[60vh]'}`}>
-      <div className="overflow-x-auto rounded-lg bg-white">
+      <div className="overflow-x-auto rounded-lg bg-white mb-10">
         <table className={`min-w-full mobile:min-h-full ${loading && !loaderHeight && 'min-h-[587px]'} ${loading && loaderHeight && 'min-h-[406px]'} ${errorState && 'min-h-[300px]'} divide-y divide-gray-200`}>
           <TableHeader columns={columns}/>
           { loading ?

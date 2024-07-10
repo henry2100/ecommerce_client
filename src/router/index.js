@@ -11,7 +11,7 @@ import ForgotPassword from '../pages/auth/ForgotPassword';
 
 import Dashboard from '../pages/dashboard';
 import Home from '../pages/dashboard/Home';
-import Shop from '../pages/dashboard/Shop';
+// import Shop from '../pages/dashboard/Shop_old';
 import Product from '../pages/dashboard/Product';
 import ContactUs from '../pages/dashboard/ContactUs';
 import Settings from '../pages/dashboard/Settings'
@@ -44,7 +44,7 @@ const AppRouter = (props) => {
 
                 <Route exact path='/dashboard' element={<Dashboard />}>
                     <Route exact path='/dashboard/home' element={userAvailable ? <Navigate to='/dashboard/shop'/> : <Home />} />
-                    <Route exact path='/dashboard/shop' element={userAvailable ? <Shop /> : <Navigate to='/dashboard/home'/>} />
+                    <Route exact path='/dashboard/shop' element={userAvailable ? <Home /> : <Navigate to='/dashboard/home'/>} />
                     <Route exact path='/dashboard/profile' element={userAvailable ? <Profile /> : <Navigate to='/dashboard/home'/>}>
                         <Route exact path='/dashboard/profile' element={userAvailable ? <Navigate to='/dashboard/profile/profile'/> : <Navigate to='/dashboard/home'/>}/>
                         <Route exact path='/dashboard/profile/profile' element={userAvailable ? <AboutMe/> : <Navigate to='/dashboard/home'/>}/>

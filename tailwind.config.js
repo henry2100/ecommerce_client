@@ -229,7 +229,27 @@ module.exports = {
           to: {
             opacity: 1
           }
-        }
+        },
+        leftSlider: {
+          from: {
+            opacity: 1,
+            transform: 'translateX(100%)'
+          },
+          to: {
+            opacity: 0,
+            transform: 'translateX(0)'
+          }
+        },
+        rightSlider: {
+          from: {
+            opacity: 1,
+            transform: 'translateX(-100%)'
+          },
+          to: {
+            opacity: 0,
+            transform: 'translateX(0)'
+          }
+        },
       },
       animation: {
         'slide_up': 'slideUp .25s linear',
@@ -239,7 +259,9 @@ module.exports = {
         'slide_right2': 'slideRight2 .25s linear',
         'slide_left': 'slideLeft .25s linear',
         'fullRoll': 'fullRoll .8s linear infinite',
-        'fade_in': 'fadeIn .25s linear'
+        'fade_in': 'fadeIn .25s linear',
+        'carousel_slide_left': 'leftSlider 1.5s linear',
+        'carousel_slide_right': 'rightSlider 1.5s linear'
       },
     },
   },

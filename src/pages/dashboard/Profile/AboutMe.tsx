@@ -36,6 +36,11 @@ const AboutMe = (props) => {
                     </span>
 
                     <span className='flex justify-between items-center gap-5 font-normal border-b pb-1'>
+                        <p className='text-xs tablet:text-[10px] text-GrayCustom1'>Currency</p>
+                        <p className='text-sm tablet:text-xs'>{props.authData.data.country.currencySymbol}</p>
+                    </span>
+
+                    <span className='flex justify-between items-center gap-5 font-normal border-b pb-1'>
                         <p className='text-xs mobile:text-[10px] text-GrayCustom1'>Role</p>
                         <div className={`${props.authData.data.role === 'seller' ? 'bg-PrimaryActive text-Primary_200' : 'bg-Primary_200 text-PrimaryActive'} px-3 py-2 rounded-md`}>{props.authData.data.role}</div>
                     </span>

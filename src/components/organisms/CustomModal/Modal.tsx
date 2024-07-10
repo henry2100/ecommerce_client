@@ -14,7 +14,7 @@ const Modal:React.FC<Props> = ({children, modalStyle, contentStyle, closeBtnImg,
     
     return (
         <div className={`${modalStyle} fixed`}>
-            <div className={`${contentStyle} relative overflow-y-scroll custom_container`}>
+            <div className={`${contentStyle} relative z-30 overflow-y-scroll custom_container`}>
                 {onClose === undefined 
                     ?   null 
                     :   <img 

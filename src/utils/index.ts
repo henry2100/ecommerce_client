@@ -110,3 +110,11 @@ export const getStatus = (code: string): StatusType => {
 export const getFileType = (fileName) => {
   return fileName.split('.').pop();
 };
+
+export const getRandomObjects = (arr, n) => {
+  // Shuffle the array to randomize the order
+  const shuffled = arr.sort(() => 0.5 - Math.random());
+
+  // Get sub-array of first n elements after shuffle
+  return shuffled.slice(0, n);
+}

@@ -21,3 +21,9 @@ export const ToSnakeCase = (textData:any) => {
     const result = textData?.replaceAll(' ','_').toLowerCase();
     return result;
 }
+
+export const trimString = (textData:any) => {
+    const result = textData?.trim().replace(/\s+/g, ' ');
+    // const result = textData.trim();
+    return result;
+}

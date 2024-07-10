@@ -8,47 +8,60 @@ type Props = {
     containerStyle?: string,
     component: any,
     autoSlide?: boolean,
-    slideDirection?: "backward" | undefined,
+    slideDirection?: "backward" | "forward" | undefined,
     slideDuration?: any,
     currentItem?: any,
-    setCurrentItem?: (e: any) => void
+    setCurrentItem?: (e: any) => void,
+    carouselStyle?: string,
+    setCarouselStyle?: (e: any) => void,
 }
 
-const Carousel = ({component, data, containerStyle, autoSlide, slideDirection, slideDuration, currentItem, setCurrentItem}: Props) => {
-    const [slideDelay, setSlideDelay] = useState(false)
-    
+const Carousel = ({ component, data, containerStyle, autoSlide, slideDirection, slideDuration, currentItem, setCurrentItem, carouselStyle, setCarouselStyle }: Props) => {
+    const [slideDelay, setSlideDelay] = useState(false);
+
     const nItems = data.length
 
     const nextItem = () => {
-        if(currentItem !== nItems){
-            setCurrentItem && setCurrentItem(currentItem + 1)   
-        }else if(currentItem === nItems){
-            setCurrentItem && setCurrentItem(1)  
+
+        if (slideDirection === "forward") {
+            setCarouselStyle && setCarouselStyle('animate-carousel_slide_left');
+
+        } else if (!slideDirection) {
+            setCarouselStyle && setCarouselStyle('animate-fade_in');
         }
-        
+
+        if (currentItem !== nItems) {
+            setCurrentItem && setCurrentItem(currentItem + 1)
+        } else if (currentItem === nItems) {
+            setCurrentItem && setCurrentItem(1)
+        }
+
     }
-    
+
     const prevItem = () => {
-        if(currentItem !== 1){
+        setCarouselStyle && setCarouselStyle('animate-carousel_slide_right');
+
+        if (currentItem !== 1) {
             setCurrentItem && setCurrentItem(currentItem - 1)
-        }else if(currentItem === 1){
+        } else if (currentItem === 1) {
             setCurrentItem && setCurrentItem(nItems)
         }
     }
 
     const autoSlideFunc = () => {
-        if(slideDirection === "backward"){
-            loopFunc(slideDuration ? slideDuration : 1000, prevItem)
-        }else{
+        if (slideDirection === "backward") {
+            loopFunc(slideDuration ? slideDuration : 1000, prevItem);
+
+        } else {
             loopFunc(slideDuration ? slideDuration : 1000, nextItem)
         }
     }
 
     const loopFunc = (duration: any, action: () => void) => {
-        for(let i = 0; i <= data.length; i++){
-            if(slideDelay){
+        for (let i = 0; i <= data.length; i++) {
+            if (slideDelay) {
                 timeoutFunc(100000, action)
-            }else{
+            } else {
                 timeoutFunc(duration, action)
             }
         }
@@ -63,19 +76,19 @@ const Carousel = ({component, data, containerStyle, autoSlide, slideDirection, s
     }
 
     const timeoutFunc = (duration: any, action: () => void) => {
-        setTimeout(()=>{
+        setTimeout(() => {
             action()
         }, duration)
-    } 
+    }
 
-    useEffect(()=>{
+    useEffect(() => {
         autoSlideFunc()
-    },[slideDelay])
+    }, [slideDelay])
 
     // console.log("slideDelay:", slideDelay);
 
     return (
-        <div className={`${containerStyle} h-[80vh] relative`} onLoad={autoSlide ? autoSlideFunc : () => {}} onMouseEnter={delaySliderOnMouseOver} onMouseLeave={delaySliderOnMouseLeave}>
+        <div className={`${containerStyle} h-[80vh] relative`} onLoad={autoSlide ? autoSlideFunc : () => { }} onMouseEnter={delaySliderOnMouseOver} onMouseLeave={delaySliderOnMouseLeave}>
             {component}
             <SlideNav
                 data={data}

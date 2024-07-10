@@ -9,9 +9,9 @@ import { trimString } from 'components/atoms/CaseManager';
 import Pagination from 'components/organisms/app-table/Pagination';
 import reloadIcon from '../../../assets/svg/refresh.svg';
 
-const Home = (props: any) => {
+const Shop = (props: any) => {
     const [loading, setLoading] = useState(false);
-    const [refresh, setRefresh] = useState(Boolean);
+    const [refresh, setRefresh] = useState(false);
     const [products, setProducts] = useState<any>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageNum, setPageNum] = useState<any>(null);
@@ -40,10 +40,6 @@ const Home = (props: any) => {
         }
     }
 
-    // useEffect(() => {
-    //     refreshState();
-    // }, []);
-    
     useEffect(() => {
         getProducts();
     }, [refresh]);
@@ -76,11 +72,8 @@ const Home = (props: any) => {
         getCurrentPage(pageNumber);
     }
 
-    console.log("filteredCurrentData:", filteredData.slice(indexOfFirstItem, indexOfLastItem));
     console.log("CurrentData:", currentData);
-    console.log("Products:", products);
-    console.log("showSearch:", props.showSearch);
-    
+
 
     return (
         <div className={`desktop:px-32 desktop:py-10 px-16 py-8 mobile:p-3 min-h-[90vh] flex ${loading ? 'justify-center items-center' : 'flex-col justify-between gap-12'}`}>
@@ -100,8 +93,8 @@ const Home = (props: any) => {
                             btnText='Reload'
                             btnStyle="!bg-Primary_200 !text-Primary"
                             btnImg={reloadIcon}
-                            btnImgStyle={`w-4 h-4 transition ease-in-out duration-500 ${loading && 'animate-fullRoll'}`}
-                            onClick={refreshState}
+                            btnImgStyle="w-4 h-4"
+                            onClick={()=>{}}
                         />
 
                         : currentData?.map((item, i) => (
@@ -137,4 +130,4 @@ const mapDispatchToProps = dispatch => ({
 
 });
 
-export default connect(mapStateToProps, null)(Home);
+export default connect(mapStateToProps, null)(Shop);

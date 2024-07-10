@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Alert from "components/atoms/Alert";
 
-const UploadFile = async (file) => {
+const UploadFile = async (file, path?:any) => {
     // const [uploadRes, setUploadRes] = useState();
     const formData = new FormData();
     formData.append('file', file);

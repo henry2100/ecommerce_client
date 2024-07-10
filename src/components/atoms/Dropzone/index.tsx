@@ -56,8 +56,8 @@ const Dropzone = (props) => {
                 <input {...getInputProps()} />
                 {props.file.length === 1
                     ? <>
-                        <span className="font-normal flex justify-between items-center">
-                            <p className={`${props.disappear ? 'hidden' : 'block'} text-sm`}>{props.file.map(item => item.name)}</p>
+                        <span className="font-normal flex justify-between items-center overflow-x-scroll">
+                            <p className={`${props.disappear ? 'hidden' : 'block'} text-sm whitespace-nowrap truncate`}>{props.file.map(item => item.name)}</p>
                             {showMssg && <p className={`text-Success text-xs absolute right-4 -top-5 ${props.addedStyle}`}>File Ready</p>}
                         </span>
                         {props.children && props.children}

@@ -34,11 +34,21 @@ const Register = (props: any) => {
     const [userProfileImg, setUserProfileImg] = useState<any>([]);
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
-    const [username, setUsername] = useState('');
+
+    // const [street, setStreet] = useState('');
+    // const [showStreet, setShowStreet] = useState(false);
+
+    // const [city, setCity] = useState('');
+    // const [showCity, setShowCity] = useState(false);
+
+    // const [state, setState] = useState('');
+    // const [showState, setShowState] = useState(false);
+
     const [userType, setUserType] = useState('');
     const [selectRoleDropdown, setSelectRoleDropdown] = useState(false);
 
     const [email, setEmail] = useState('');
+    const [countryInput, setCountryInput] = useState('');
     const [country, setCountry] = useState<any>([]);
     const [countryDropdown, setCountryDropdown] = useState(false);
     const [uploadedImgRes, setUploadedImgRes] = useState<any>({});
@@ -57,7 +67,7 @@ const Register = (props: any) => {
 
     const navigate = useNavigate();
 
-    const formComplete = firstname !== '' || lastname !== '' || username !== '' || userType !== '' || email !== '' || country !== '' || password !== '' || confirmPassword !== '';
+    const formComplete = firstname !== '' || lastname !== '' || userType !== '' || email !== '' || country !== '' || password !== '' || confirmPassword !== '';
 
     const disableBtn = !formComplete || loading;
 
@@ -110,57 +120,73 @@ const Register = (props: any) => {
                 Alert('info', 'You should update you profile picture after Successful Login');
                 navigate('/auth/login');
             }, 2000);
-        }
-        res?.data.message !== undefined && Alert('success', res?.data.message);
-        setLoading(false);
-    }
-
-    const handleUploadFile = () => {
-        if (userProfileImg.length > 0) {
-            userProfileImg.forEach(file => {
-                const res = UploadFile(file);
-                setUploadedImgRes(res);
-            });
         } else {
-            Alert('error', 'No file selected for upload');
+            res?.data.message !== undefined && Alert('error', res?.data.message);
+            setLoading(false);
         }
     }
 
-    const handleSubmit = e => {
+    const handleSubmit = async (e) => {
         setLoading(true);
         e.preventDefault();
 
+        const reqData = {
+            firstname: firstname,
+            lastname: lastname,
+            address: {},
+            email: email,
+            password: confirmPassword,
+            country: country,
+            role: userType,
+            imageUrl: ''
+        }
+
         if (formComplete) {
-            if(passwdValid){
-                if(passwdConfirmed){
-                    verifyUser({
-                        firstname: firstname,
-                        lastname: lastname,
-                        username: username,
-                        email: email,
-                        password: confirmPassword,
-                        country: country,
-                        role: userType,
-                        imageUrl: ''
-                    });
-                }else{
+            if (passwdValid) {
+                if (passwdConfirmed) {
+
+                    if (userProfileImg.length > 0) {
+                        try {
+                            const uploadPromises = userProfileImg.map(file => UploadFile(file, `${email}`));
+                            const uploadResult = await Promise.all(uploadPromises);
+
+                            console.log("uploadResult:", uploadResult);
+                            
+                            const imageUrl = uploadResult[0].url
+
+                            verifyUser({ ...reqData, imageUrl: imageUrl });
+                        } catch (error) {
+                            Alert('error', 'Error uploading your profile image');
+                        }
+                    } else {
+                        verifyUser(reqData);
+                    }
+                } else {
                     setLoading(false);
                     Alert('error', 'Password does not match');
 
-                    setTimeout(()=> {
+                    setTimeout(() => {
                         setPassword('');
                         setConfirmPassword('');
                     }, 1000);
                 }
-            }else{
+            } else {
                 setLoading(false);
                 Alert('error', 'Password must have at least one digit or special character to be more secure');
             }
-        }else{
+        } else {
             setLoading(false);
             Alert('error', 'All fields are required');
         }
     }
+
+    const filteredCountries = countryList.filter(country => {
+        if (country.country.toLowerCase().includes(countryInput.toLowerCase())) {
+            return country;
+        } else {
+            return;
+        }
+    })
 
     return (
         <div className='relative bg-Background1 shadow-2xl flex mobile:flex-col-reverse desktop:max-w-[40vw] max-w-[60vw] mobile:max-w-[100vw] mobile:w-[70vw] desktop:rounded-2xl rounded-xl'>
@@ -174,29 +200,11 @@ const Register = (props: any) => {
                 </div>
 
                 <div className='flex flex-col gap-2'>
-                    {/* <Dropzone
-                        className='p-2 border border-PrimaryActive rounded-md border-dashed bg-Primary_200'
-                        text='Drop your file here or choose file'
-                        textStyle='font-normal text-sm text-PrimaryActive'
-                        label="Profile Image"
-                        labelStyle="font-normal text-sm leading-6 text-Black2"
-                        style='w-full'
-                        icon={DropzoneIcon}
-                        acceptedExt={acceptedFileExt}
-                        file={userProfileImg}
-                        setFile={setUserProfileImg}
-                    />
-                    <Button
-                        btnType='button'
-                        btnText='Upload'
-                        btnStyle='bg-DarkBg3 text-white px-5 py-2'
-                        onClick={handleUploadFile}
-                    /> */}
                     <div className='flex mobile:flex-col items-center gap-3'>
                         <FormInput
                             type='text'
                             name='firstname'
-                            placeholder="example@gmail.com"
+                            placeholder="Firstname"
                             style='w-1/2'
                             inputStyle="border border-transparent text-Black2 w-full"
                             label="Firstname"
@@ -208,7 +216,7 @@ const Register = (props: any) => {
                         <FormInput
                             type='text'
                             name='lastname'
-                            placeholder="example@gmail.com"
+                            placeholder="Lastname"
                             style='w-1/2'
                             inputStyle="border border-transparent text-Black2 w-full"
                             label="Lastname"
@@ -218,41 +226,38 @@ const Register = (props: any) => {
                         />
                     </div>
 
-
-
                     <div className='flex mobile:flex-col items-center gap-3'>
-                        <FormInput
-                            type='text'
-                            name='username'
-                            placeholder="example@gmail.com"
-                            style='w-3/5'
-                            inputStyle="border border-transparent text-Black2 w-full"
-                            label="Username"
+                        <Dropzone
+                            className='p-2 border border-PrimaryActive rounded-md border-dashed bg-Primary_200'
+                            text='Drop your file here or choose file'
+                            textStyle='font-normal text-sm text-PrimaryActive'
+                            label="Profile Image"
                             labelStyle="font-normal text-sm leading-6 text-Black2"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            style='w-3/5 tablet:w-full'
+                            acceptedExt={acceptedFileExt}
+                            file={userProfileImg}
+                            setFile={setUserProfileImg}
                         />
 
-                        <div className={`w-2/5 relative z-30 cursor-pointer`} onClick={() => setSelectRoleDropdown(prevState => !prevState)}>
-                            <FormInput
-                                type="text"
-                                placeholder='Select Role'
-                                style={` w-full relative z-[25]`}
-                                inputStyle="border border-transparent text-Black2 w-full bg-white"
-                                label="Select Role"
-                                labelStyle="font-normal text-sm leading-6 text-Black2"
-                                inputStyle2='disabled cursor-pointer'
-                                value={userType}
-                                onChange={e => { }}
-                                img={
-                                    selectRoleDropdown
-                                        ? arrowUp
-                                        : arrowDown
-                                }
-                                imgStyle={`w-4 h-4 cursor-pointer`}
-                            />
+                        <div className={`relative z-[22] w-2/5 tablet:w-full flex flex-col ${userType !== '' ? 'text-PrimaryActive' : 'text-Primary'}`}
+                            onClick={() => setSelectRoleDropdown(prevState => !prevState)}
+                        >
+                            <label className='font-normal text-sm leading-6 text-Black2 mb-2'>
+                                Select Role
+                            </label>
+                            <div className={`relative z-20 w-full bg-white cursor-pointer border rounded-md flex items-center p-2`}
+                            >
+                                <div className={`${userType !== '' ? 'text-PrimaryActive' : 'text-Primary'} flex gap-3 items-center overflow-x-scroll custom_container w-[90%]`}>
+                                    {userType !== '' ? userType : 'Select Role'}
+                                </div>
+                                <img
+                                    src={selectRoleDropdown ? arrowUp : arrowDown}
+                                    alt='arrow-icon'
+                                    className='absolute right-3 w-4 h-4'
+                                />
+                            </div>
                             {selectRoleDropdown &&
-                                <div className={`min-w-[150px] w-3/4 max-h-[250px] overflow-scroll flex flex-col gap-0 absolute z-20  right-0 p-1 bg-white rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] h-fit animate-slide_down2`}>
+                                <div className={`min-w-[150px] w-3/4 max-h-[250px] overflow-scroll flex flex-col gap-0 absolute z-10 top-20 right-0 p-1 bg-white rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] h-fit animate-slide_down2`}>
                                     {userRoleType?.map((item, i) => (
                                         <span key={i} onClick={() => setUserType(item.label)} className='cursor-pointer font-normal text-sm leading-6 text-Black2 rounded-md p-2 hover:bg-BackDrop_d_xs'>
                                             {item.label}
@@ -275,31 +280,50 @@ const Register = (props: any) => {
                             onChange={(e) => setEmail(e.target.value)}
                         />
 
-                        <div className={`w-2/5 relative z-[15] cursor-pointer`} onClick={() => setCountryDropdown(prevState => !prevState)}>
+                        <div className={`w-2/5 relative z-[15] cursor-pointer`}>
                             <FormInput
                                 type="text"
                                 placeholder='Select Country'
-                                style={` w-full relative z-[12]`}
+                                style={`w-full relative z-[12]`}
                                 inputStyle="border border-transparent text-Black2 w-full bg-white"
                                 label="Select Country"
                                 labelStyle="font-normal text-sm leading-6 text-Black2"
                                 inputStyle2='disabled cursor-pointer'
-                                value={country.country}
-                                onChange={e => { }}
+                                value={countryInput}
+                                onChange={e => {
+                                    setCountryInput(e.target.value);
+
+                                    if (e.target.value.length > 0) {
+                                        setCountryDropdown(true);
+                                    }
+                                }}
                                 img={
                                     countryDropdown
                                         ? arrowUp
                                         : arrowDown
                                 }
                                 imgStyle={`w-4 h-4 cursor-pointer`}
+                                imgOnClick={() => setCountryDropdown(prevState => !prevState)}
                             />
                             {countryDropdown &&
-                                <div className={`min-w-[150px] w-3/4 max-h-[200px] overflow-scroll flex flex-col gap-0 absolute z-10  right-0 p-1 bg-white rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] h-fit animate-slide_down2`}>
-                                    {countryList?.map((item, i) => (
-                                        <span key={i} onClick={() => setCountry(item)} className='cursor-pointer font-normal text-sm leading-6 text-Black2 rounded-md p-2 hover:bg-BackDrop_d_xs'>
-                                            {item.country}
+                                <div className={`min-w-[150px] w-3/4 max-h-[200px] overflow-scroll flex flex-col gap-0 absolute z-10 right-0 p-1 bg-white rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] h-fit animate-slide_down2`}>
+                                    {filteredCountries?.length === 0
+                                        ? <span className='cursor-default font-normal text-sm leading-6 text-Danger rounded-md p-2 hover:bg-BackDrop_d_xs'>
+                                            Not found
                                         </span>
-                                    ))}
+
+                                        : filteredCountries?.map((item, i) => (
+                                            <span
+                                                key={i}
+                                                onClick={() => {
+                                                    setCountry(item);
+                                                    setCountryInput(item.country)
+                                                    setCountryDropdown(false);
+                                                }} className='cursor-pointer font-normal text-sm leading-6 text-Black2 rounded-md p-2 hover:bg-BackDrop_d_xs'>
+                                                {item.country}
+                                            </span>
+                                        ))
+                                    }
                                 </div>
                             }
                         </div>
@@ -366,17 +390,62 @@ const Register = (props: any) => {
                     </p>
                 </div>
             </form>
-            {/* {userProfileImg.length > 0 &&
+            {userProfileImg.length > 0 &&
                 <span className="w-[150px] h-[150px] rounded-lg border-2 border-PrimaryActive overflow-hidden absolute -right-40 top-0">
-                    {userProfileImg.map(item => (
-                        <>
-                            <img src={item.preview} alt='previewImg' className="w-full h-full object-cover object-center object-fit" />
-                        </>
+                    {userProfileImg.map((item, i) => (
+                        <img key={i} src={item.preview} alt='previewImg' className="w-full h-full object-cover object-center object-fit" />
                     ))}
                 </span>
-            } */}
+            }
         </div>
     )
 }
 
 export default Register;
+
+
+
+
+
+
+
+
+
+
+
+
+{/* <FormInput
+        type='text'
+        name='street'
+        placeholder="example@gmail.com"
+        style='w-3/5 flex'
+        inputStyle="border border-transparent text-Black2 w-full"
+        label="Home Address"
+        labelStyle="font-normal text-sm leading-6 text-Black2"
+        value={street}
+        onChange={(e) => setStreet(e.target.value)}
+    />
+
+    <FormInput
+        type='text'
+        name='city'
+        placeholder="example@gmail.com"
+        style='w-3/5 hidden'
+        inputStyle="border border-transparent text-Black2 w-full"
+        label="Home Address"
+        labelStyle="font-normal text-sm leading-6 text-Black2"
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+    />
+
+    <FormInput
+        type='text'
+        name='state'
+        placeholder="example@gmail.com"
+        style='w-3/5 hidden'
+        inputStyle="border border-transparent text-Black2 w-full"
+        label="Home Address"
+        labelStyle="font-normal text-sm leading-6 text-Black2"
+        value={state}
+        onChange={(e) => setState(e.target.value)}
+    /> */}

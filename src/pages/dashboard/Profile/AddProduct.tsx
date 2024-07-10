@@ -15,11 +15,13 @@ import Spinner from 'components/atoms/Spinner';
 import { connect } from 'react-redux';
 import UploadFile from 'components/molecules/Uploader';
 import axios from 'axios';
+import { ToTitleCase } from 'components/atoms/CaseManager';
 
 const acceptedFileExt = {
     'image/png': ['.png'],
     'image/jpeg': ['.jpeg'],
-    'image/jpg': ['.jpg']
+    'image/jpg': ['.jpg'],
+    'image/webp': ['.webp']
 }
 
 const AddProduct = (props: any) => {
@@ -27,7 +29,7 @@ const AddProduct = (props: any) => {
     const [prodName, setProdName] = useState('');
     const [prodPrice, setProdPrice] = useState('');
     const [prodQuantity, setProdQuantity] = useState('');
-    const [InputCategory, setInputCategory] = useState('');
+    const [inputCategory, setInputCategory] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [categoryDropdown, setCategoryDropdown] = useState(false);
     const [categoryList, setCategoryLIst] = useState<any>([]);
@@ -40,7 +42,7 @@ const AddProduct = (props: any) => {
     const [prodImages, setProdImages] = useState<any>([]);
     const [imgUploadRes, setImgUploadRes] = useState<any>([]);
 
-    console.log('UserId:', props.userId);
+    console.log('userData:', props.userData.data.country.currencySymbol);
 
     const formComplete = prodName !== '' || prodPrice !== '' || prodQuantity !== '' || selectedCategory !== '' || selectedProdTags.length >= 1 || prodImages.length >= 2;
 
@@ -61,7 +63,7 @@ const AddProduct = (props: any) => {
     }, []);
 
     const filteredData = categoryList?.filter(item => {
-        if (item.categoryName.toLowerCase().includes(InputCategory.toLowerCase())) {
+        if (item.categoryName.toLowerCase().includes(inputCategory.toLowerCase())) {
             return item;
         }
         else {
@@ -83,84 +85,37 @@ const AddProduct = (props: any) => {
             "Authorization": `Bearer ${props.accessToken}`
         }, reqData);
 
-        console.log("Add_product_res:", res);
+        // console.log("Add_product_res:", res);
+
+        if (res?.status === 200) {
+            Alert('success', res?.data.message);
+            handleCancelled();
+        } else {
+            res?.data.message !== undefined && Alert('error', res?.data.message);
+            setLoading(false);
+        }
     }
 
-    // const uploadToCloudinary = async (file: any) => {
-    //     const formData = new FormData();
-    //     formData.append('file', file);
-    //     formData.append('upload_preset', 'your_upload_preset'); // Replace with your Cloudinary upload preset
-
-    //     try {
-    //         const res = await axios.post('https://api.cloudinary.com/v1_1/dtegg4r9t/image/upload', formData); // Replace with your Cloudinary URL
-    //         console.log("res:", res.data);
-    //         return res.data.secure_url;
-    //     } catch (err) {
-    //         console.error('Error uploading to Cloudinary:', err);
-    //         return null;
-    //     }
-    // };
-
-    // const handleSubmit = async (e: any) => {
-    //     e.preventDefault();
-
-    //     setLoading(true);
-
-    //     const imageUrls = await Promise.all(prodImages.map(async (file: any) => {
-    //         const uploadUrl = await uploadToCloudinary(file);
-    //         return uploadUrl;
-    //     }));
-
-    //     const reqData = {
-    //         sellerId: props.userId,
-    //         name: prodName,
-    //         description: prodDesc,
-    //         price: prodPrice,
-    //         quantity: prodQuantity,
-    //         category: selectedCategory,
-    //         tags: selectedProdTags,
-    //         imageUrl: imageUrls
-    //     };
-
-    //     await addProduct(reqData);
-
-    //     setLoading(false);
-    //     handleCancelled();
-    // };
-
-    // const handleImageUpload = () => {
-    //     setLoading(true)
-    //     prodImages.forEach(async file => {
-    //         const resUrl = await UploadFile(file);
-
-    //         if (resUrl !== undefined) updateProfile({ imageUrl: resUrl.url }, 'update_profile_img');
-
-    //         else setLoading(false);
-    //     });
-    // }
-
-    console.log("fileUploadRes:", imgUploadRes);
+    // console.log("prodImages:", prodImages);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         if (prodImages.length > 0) {
             setLoading(true); // Optional: set loading state if you have a spinner
-    
+
             try {
                 // Wait for all upload promises to resolve
                 const uploadPromises = prodImages.map(file => UploadFile(file));
                 const uploadResults = await Promise.all(uploadPromises);
-    
+
                 // Aggregate the URLs from the results
                 // const imageUrls = uploadResults.map(res => ({ imageUrl: res.url }));
                 const imageUrls = uploadResults.map(res => res.url);
-                
+
                 // Update the state with the aggregated URLs
                 setImgUploadRes(imageUrls);
-    
-                console.log("fileUploadRes:", imageUrls);
-    
+
                 // Now, you can include imageUrls in your reqData
                 const reqData = {
                     sellerId: props.userId,
@@ -169,63 +124,35 @@ const AddProduct = (props: any) => {
                     price: prodPrice,
                     quantity: prodQuantity,
                     category: selectedCategory,
+                    currency: props.currency,
                     tags: selectedProdTags,
                     imageUrl: imageUrls, // Updated to include all uploaded image URLs
                 };
-    
+
                 // Make the API request to add the product
                 await addProduct(reqData);
+                setLoading(false);
             } catch (error) {
-                console.error("Error uploading images:", error);
+                // console.error("Error uploading images:", error);
+                setLoading(false);
             } finally {
                 setLoading(false); // Optional: reset loading state
             }
         }
     };
-    
-
-    // const handleSubmit = e => {
-    //     e.preventDefault();
-
-    //     // if(formComplete){
-    //         if(prodImages.length > 0){
-    //             prodImages.map(async file => {
-    //                 const uploadRes = await UploadFile(file);
-
-    //                 // if (uploadRes !== undefined) updateProfile({ imageUrl: uploadRes.url }, 'update_profile_img');
-    //                 // if (uploadRes !== undefined) console.log("fileUploadRes:", uploadRes);
-    //                 // setImgUploadRes({...imgUploadRes, uploadRes});
-
-    //                 setImgUploadRes([...imgUploadRes, {imageUrl: uploadRes.url}]);
-    //             });
-
-    //             console.log("fileUploadRes:", imgUploadRes)
-    //         }
-
-
-    //         // const reqData = {
-    //         //     sellerId: props.userId,
-    //         //     name: prodName,
-    //         //     description: prodDesc,
-    //         //     price: prodPrice,
-    //         //     quantity: prodQuantity,
-    //         //     category: selectedCategory,
-    //         //     tags: selectedProdTags,
-    //         //     imageUrl: ''
-    //         // }
-
-    //         // appProduct(reqData);
-    //     // }
-    // }
 
     const handleCancelled = () => {
         setProdName('');
+        setProdDesc('');
         setProdPrice('');
         setProdQuantity('');
         setSelectedCategory('');
+        setInputCategory('');
         setSelectedProdTags([]);
         setProdImages([]);
         setImgUploadRes([]);
+        setCategoryDropdown(false);
+        setProdTagsDropdown(false);
     }
 
     return (
@@ -239,12 +166,12 @@ const AddProduct = (props: any) => {
                         label="Product Name"
                         labelStyle="font-normal text-sm leading-6 text-Black2"
                         inputStyle="border border-transparent text-PrimaryActive"
-                        style='w-full'
+                        style='w-2/3'
                         value={prodName}
                         onChange={e => setProdName(e.target.value)}
                     />
 
-                    <div className={`w-2/5 tablet:w-full relative z-[15] cursor-pointer`}>
+                    <div className={`w-1/3 tablet:w-full relative z-[15] cursor-pointer`}>
                         <FormInput
                             type="text"
                             placeholder='Category'
@@ -253,11 +180,11 @@ const AddProduct = (props: any) => {
                             label="Select Category"
                             labelStyle="font-normal text-sm leading-6 text-Black2"
                             inputStyle2='disabled cursor-pointer'
-                            value={InputCategory}
+                            value={ToTitleCase(inputCategory)}
                             onChange={e => {
                                 setInputCategory(e.target.value)
 
-                                if (e.target.value.length > 1) {
+                                if (e.target.value.length > 0) {
                                     setCategoryDropdown(true)
                                 }
 
@@ -280,8 +207,8 @@ const AddProduct = (props: any) => {
 
                                     : filteredData?.map((item, i) => (
                                         <span key={i} onClick={() => {
-                                            setInputCategory(item.categoryName)
-                                            setSelectedCategory(item._id)
+                                            setInputCategory(item.categoryName);
+                                            setSelectedCategory(item.categoryName);
                                             setAvailableTags(item.subTag);
                                             setCategoryDropdown(false);
                                         }} className='cursor-pointer font-normal text-sm leading-6 text-Primary rounded-md p-2 hover:bg-BackDrop_d_xs'>
@@ -327,9 +254,8 @@ const AddProduct = (props: any) => {
                             Select Product Tags
                         </label>
                         <div className={`${selectedProdTags.length > 0 ? 'px-2 py-1' : 'p-2'} relative w-full bg-white cursor-pointer border rounded-md flex items-center`}
-                            onClick={availableTags.length > 0 ? () => setProdTagsDropdown(prevState => !prevState) : () => Alert('error', 'Select Product category first')}
                         >
-                            <div className='flex gap-3 items-center text-PrimaryActive overflow-x-scroll custom_container'>
+                            <div className={`${selectedProdTags.length > 0 ? 'text-PrimaryActive' : 'text-Primary'} flex gap-3 items-center overflow-x-scroll custom_container w-[90%]`}>
                                 {selectedProdTags.length > 0
                                     ? selectedProdTags.map(item => (
                                         <span className='group border px-3 py-1 whitespace-nowrap text-ellipsis rounded-md flex flex-shrink-0 gap-2 justify-between items-center transition ease-in-out duration-500'>
@@ -341,13 +267,20 @@ const AddProduct = (props: any) => {
                                                 onClick={() => setSelectedProdTags(selectedProdTags.filter(t => t !== item))}
                                             />
                                         </span>
-                                    ))
+                                    )).reverse()
                                     : 'Product Tags'}
                             </div>
-                            <img src={prodTagsDropdown ? arrowUp : arrowDown} alt='arrow-icon' className='absolute right-3 w-4 h-4' />
+                            <img
+                                src={prodTagsDropdown ? arrowUp : arrowDown}
+                                alt='arrow-icon'
+                                className='absolute right-3 w-4 h-4'
+                                onClick={availableTags.length > 0 ? () => setProdTagsDropdown(prevState => !prevState) : () => Alert('error', 'Select Product category first')}
+                            />
                         </div>
                         {prodTagsDropdown &&
-                            <div className={`min-w-[150px] max-w-3/5 w-fit max-h-[200px] overflow-scroll flex flex-col gap-0 absolute z-10 right-0 top-20 p-1 bg-white rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] h-fit animate-slide_down2`}>
+                            <div className={`min-w-[150px] max-w-3/5 w-fit max-h-[200px] overflow-scroll flex flex-col gap-0 absolute z-10 right-0 top-20 p-1 bg-white rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] h-fit animate-slide_down2`}
+                                // onMouseLeave={() => setProdTagsDropdown(false)}
+                            >
                                 {availableTags?.map((item, i) => (
                                     <span key={i} onClick={() => handleTagSelection(item)} className='cursor-pointer font-normal text-sm leading-6 text-Primary rounded-md p-2 hover:bg-BackDrop_d_xs'>
                                         {item}
@@ -406,18 +339,26 @@ const AddProduct = (props: any) => {
                             : 'Submit'
                         }
                         btnStyle={`px-5 py-2 w-fit mobile:w-full font-bold text-base mobile:text-sm text-white bg-Primary ${!disableBtn && 'hover:bg-Primary_Accents_3xl'}`}
-                        // disabled={disableBtn}
-                        // disabledClass={`${disableBtn && 'cursor-not-allowed !text-Primary bg-PrimaryDisabled'}`}
+                        disabled={disableBtn}
+                        disabledClass={`${disableBtn && 'cursor-not-allowed !text-Primary bg-PrimaryDisabled'}`}
                         onClick={() => { }}
                     />
                 </div>
             </form>
 
             {prodImages.length > 0 &&
-                <div className='shadow-custom_border border-[.5px] bg-Background1 p-1 rounded-md desktop:w-2/5 w-1/4 mobile:w-full h-fit flex flex-wrap justify-between items-center gap-1'>
+                <div className='shadow-custom_border border-[.5px] bg-Background1 p-1 rounded-md desktop:w-2/5 w-1/4 mobile:w-full h-fit flex flex-wrap justify-start items-center gap-1'>
                     {prodImages && prodImages.map((item, i) => (
-                        <img key={i} src={item.preview} alt='previewImg' className="max-w-[100px] max-h-[100px] desktop:w-[100px] desktop:h-[100px] tablet:w-full tablet:h-full h-auto object-cover object-center rounded-md" />
+                        <span className='group relative transition ease-in-out duration-250 border-[.5px] border-NoColor hover:border-PrimaryActive rounded-md'>
+                            <img src={cancelIcon}
+                                alt='remove'
+                                className='w-4 h-4 absolute top-1 right-1 hidden group-hover:block transition ease-in-out duration-250 animate-fade_in cursor-pointer'
+                                onClick={() => setProdImages(prodImages.filter(itemData => itemData !== item))}
+                            />
+                            <img key={i} src={item.preview} alt='previewImg' className="max-w-[100px] max-h-[100px] desktop:w-[100px] desktop:h-[100px] tablet:w-full tablet:h-full h-auto object-cover object-center rounded-md" />
+                        </span>
                     ))}
+                    { }
                 </div>
             }
         </div>
@@ -427,7 +368,8 @@ const AddProduct = (props: any) => {
 const mapStateToProps = state => ({
     userData: state.auth.user_authData,
     userId: state.auth.user_authData.data._id,
-    accessToken: state.auth.user_authData.token.accessToken
+    accessToken: state.auth.user_authData.token.accessToken,
+    currency: state.auth.user_authData.data.country.currencySymbol
 })
 
 export default connect(mapStateToProps, null)(AddProduct);
