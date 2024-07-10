@@ -33,7 +33,7 @@ const Home = (props: any) => {
         if (res?.status === 200) {
             setLoading(false);
             setProducts(res?.data.data);
-            Alert('success', 'Products fetched successfully');
+            Alert('success', res?.data.message);
         } else {
             setLoading(false);
             // Alert('error', 'Error fetching Products');
