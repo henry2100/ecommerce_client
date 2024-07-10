@@ -33,7 +33,7 @@ const Home = (props: any) => {
         if (res?.status === 200) {
             setLoading(false);
             setProducts(res?.data.data);
-            Alert('success', 'Products fetched successfully');
+            Alert('success', res?.data.message);
         } else {
             setLoading(false);
             // Alert('error', 'Error fetching Products');
@@ -76,10 +76,10 @@ const Home = (props: any) => {
         getCurrentPage(pageNumber);
     }
 
-    console.log("filteredCurrentData:", filteredData.slice(indexOfFirstItem, indexOfLastItem));
-    console.log("CurrentData:", currentData);
-    console.log("Products:", products);
-    console.log("showSearch:", props.showSearch);
+    // console.log("filteredCurrentData:", filteredData.slice(indexOfFirstItem, indexOfLastItem));
+    // console.log("CurrentData:", currentData);
+    // console.log("Products:", products);
+    // console.log("showSearch:", props.showSearch);
     
 
     return (
