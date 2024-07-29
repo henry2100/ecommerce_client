@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import Footer from 'components/organisms/Footer';
 import { toggleDarkMode } from '../../redux/app/app.action';
 import TopNav from '../../components/organisms/Navigation';
-import { HideBetween } from 'react-hide-on-scroll'
 import { getValues } from 'services/storage';
 import { handleLogout } from 'utils';
 import moment from 'moment';
@@ -56,11 +55,6 @@ const Dashboard = (props) => {
 
     const userAuthData = props.authData;
     const userLogStatus = props.loggedIn;
-
-    <HideBetween div startDivID="top" endDivID="end">
-        <MobileNav/>
-        <div className='relative z-40 bg-rose-500 border-2 border-rose-500 p-10'></div>
-    </HideBetween>
 
     return (
         <div className={`${props.darkMode ? 'bg-Primary_800' : 'bg-Background1'} w-full h-fit min-h-screen`}>
