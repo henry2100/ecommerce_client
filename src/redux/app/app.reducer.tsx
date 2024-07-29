@@ -1,9 +1,10 @@
-import React from 'react';
-
 import {
     DARK_MODE,
     ADD_TO_CART,
     REMOVE_FROM_CART,
+    CLEAR_CART,
+    ADD_TO_QUANTITY,
+    REMOVE_FROM_QUANTITY,
     STORE_TABLE_ITEM,
     SEARCH_QUERY,
     TOGGLE_SEARCH_BOX,
@@ -13,9 +14,9 @@ import {
 interface CartItem {
     id: string;
     name: string;
-    category: number;
+    category: string;
     currency: string;
-    tags: any[];
+    tags: string[];
     productImg: string;
     price: number;
     quantity: number;
@@ -44,7 +45,10 @@ const APP_INIT_STATE: AppState = {
     shopping_cart: []
 }
 
-const AppReducer = (state = APP_INIT_STATE, action: Action) => {
+const AppReducer = (state = APP_INIT_STATE, action: Action): AppState => {
+    // console.log("Reducer state:", state.shopping_cart);
+    // console.log("Reducer action:", action);
+
     switch (action.type) {
         case DARK_MODE:
             return {
@@ -52,13 +56,17 @@ const AppReducer = (state = APP_INIT_STATE, action: Action) => {
                 darkMode: !state.darkMode
             }
 
+        case CLEAR_CART:
+            return{
+                ...state,
+                shopping_cart: []
+            }
+
         case ADD_TO_CART:
-            const newItem = action.payload;
+            const newItem = action.payload as CartItem;
             const existingCartItem = state.shopping_cart.find(item => item.id === newItem.id);
 
-            console.log("existingCartItem:", existingCartItem);
-            
-            let updatedCart: any[];
+            let updatedCart: CartItem[];
 
             if (existingCartItem) {
                 updatedCart = state.shopping_cart.map(item =>
@@ -80,14 +88,47 @@ const AppReducer = (state = APP_INIT_STATE, action: Action) => {
             };
 
         case REMOVE_FROM_CART:
-            const itemIdToRemove = action.payload;
-            const filteredCartState = state.shopping_cart?.filter(item => item.id !== itemIdToRemove);
+            const itemIdToRemove = action.payload as string;
+            const filteredCartState = state.shopping_cart.filter(item => item.id !== itemIdToRemove);
 
             return {
                 ...state,
                 shopping_cart: filteredCartState
             }
 
+        case ADD_TO_QUANTITY:
+            const productId = action.payload as string;
+            const updateProduct = state.shopping_cart.map(item =>
+                item.id === productId
+                    ? {
+                        ...item,
+                        quantity: item.quantity + 1,
+                        price: (item.quantity + 1) * item.init_price
+                    }
+                    : item
+            );
+
+            return {
+                ...state,
+                shopping_cart: updateProduct
+            }
+
+        case REMOVE_FROM_QUANTITY:
+            const productId_ = action.payload as string;
+            const updateProduct_ = state.shopping_cart.map(item =>
+                item.id === productId_
+                    ? {
+                        ...item,
+                        quantity: item.quantity - 1,
+                        price: (item.quantity - 1) * item.init_price
+                    }
+                    : item
+            );
+
+            return {
+                ...state,
+                shopping_cart: updateProduct_
+            }
 
         case STORE_TABLE_ITEM:
             return {

@@ -71,10 +71,10 @@ const FormInput = React.forwardRef(({
 
     return (
         <div className={`${darkMode ? '' : ''} ${style} flex flex-col`}>
-            {label && <label className={`${labelStyle} mb-2`}>{label}</label>}
+            {label && <label className={`${labelStyle} ${darkMode ? 'text-Primary' : 'text-PrimaryActive'} mb-2`}>{label}</label>}
             {   btnElement && img
                 ?   <div className={`${inputContainerStyle} flex`}>
-                        <span className={`${inputStyle} ${darkMode ? 'bg-Primary_600 !border-none text-Primary_200' : 'bg-white'} flex items-center w-3/4 rounded-md overflow-hidden relative`}>
+                        <span className={`${inputStyle} ${darkMode ? 'bg-Primary_Accents_sm !border-none text-Primary_200' : 'bg-white'} flex items-center w-3/4 rounded-md overflow-hidden relative`}>
                             <img src={img} alt="icon" className={`${imgStyle} absolute right-5`} onClick={imgOnClick}/>
                             <input 
                                 type={type} 
@@ -94,7 +94,7 @@ const FormInput = React.forwardRef(({
                     </div>
                 :btnElement && !img   
                 ?   <div className={`${inputContainerStyle} flex`}>
-                        <span className={`${inputStyle} ${darkMode ? 'bg-Primary_600 !border-none text-Primary_200' : 'bg-white'} rounded-md overflow-hidden w-3/4`}>
+                        <span className={`${inputStyle} ${darkMode ? 'bg-Primary_Accents_sm !border-none text-Primary_200' : 'bg-white'} rounded-md overflow-hidden w-3/4`}>
                             <input
                                 type={type} 
                                 name={name} 
@@ -112,7 +112,7 @@ const FormInput = React.forwardRef(({
                         {btnContent}
                     </div>
                 :   !btnElement && img
-                ?   <span className={`${darkMode ? 'bg-Primary_600 !border-none text-Primary_200' : 'bg-white'} d-span flex ${inputStyle} items-center rounded-md overflow-hidden relative`}>
+                ?   <span className={`${darkMode ? 'bg-Primary_Accents_sm !border-none text-Primary_200' : 'bg-white'} d-span flex ${inputStyle} items-center rounded-md overflow-hidden relative`}>
                         <img src={img} alt="icon" className={`${imgStyle} absolute right-5`} onClick={imgOnClick}/>
                         <input
                             type={type} 
@@ -128,7 +128,7 @@ const FormInput = React.forwardRef(({
                             autoComplete={autoComplete}
                         />
                     </span>
-                :   <span className={`${darkMode ? 'bg-Primary_600 !border-none text-Primary_200' : 'bg-white'} e-span ${inputStyle} rounded-md overflow-hidden`}>
+                :   <span className={`${darkMode ? 'bg-Primary_Accents_sm !border-none text-Primary_200' : 'bg-white'} e-span ${inputStyle} rounded-md overflow-hidden`}>
                         <input
                             type={type} 
                             name={name} 

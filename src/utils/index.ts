@@ -10,10 +10,10 @@ import { StatusType } from 'types';
 import { resetAppState } from '../redux/app/app.action';
 import { resetAuthState } from '../redux/auth/auth.action';
 
-// const state = store.getState();
-// const bearerToken = state.auth.token;
-// console.log("Bearer Token:", bearerToken);
-// state.auth.user_authData?.token
+import { store } from '../redux/store'
+
+const state = store.getState();
+const darkMode =  state.app.darkMode;
 
 export const inputNum = /^[0-9]*$/;
 export const inputFloat = /^\d*\.?(?:\d{1,2})?$/;
@@ -28,6 +28,13 @@ export const appMode = () => {
   return 'development';
 };
 
+export const getSumation = (varObj: any[]) => {
+  let sum = varObj.reduce(function (accumulator, currentValue) {
+      return accumulator + currentValue;
+  }, 0);
+
+  return sum.toFixed(2);
+}
 
 export function toMoney(value: string | any) {
   var formatter = new Intl.NumberFormat('en-US', {
@@ -42,9 +49,9 @@ export function toMoney(value: string | any) {
 export const handleException = (error: any) => {
   try {
     if (error.response) {
-      Alert('error', error.response.data.message);
+      Alert('error', error.response.data.message, darkMode);
     } else {
-      Alert('error', error.message);
+      Alert('error', error.message, darkMode);
     }
   } catch (e) {
     Alert('error', 'We are unable to process your request at the moment.');
@@ -63,8 +70,8 @@ export const commaSeparateNumber = (val: string) => {
 export const handleLogout = () => {
   resetAppState();
   resetAuthState();
-  localStorage.clear()
-  sessionStorage.clear()
+  localStorage.clear();
+  sessionStorage.clear();
   window.location.href = "/dashboard/home";
 }
 

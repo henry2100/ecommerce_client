@@ -6,6 +6,7 @@ import SlideNav from './SlideNav'
 type Props = {
     data: any[],
     containerStyle?: string,
+    carouselBtns?: string,
     component: any,
     autoSlide?: boolean,
     slideDirection?: "backward" | "forward" | undefined,
@@ -16,7 +17,7 @@ type Props = {
     setCarouselStyle?: (e: any) => void,
 }
 
-const Carousel = ({ component, data, containerStyle, autoSlide, slideDirection, slideDuration, currentItem, setCurrentItem, carouselStyle, setCarouselStyle }: Props) => {
+const Carousel = ({ carouselBtns, component, data, containerStyle, autoSlide, slideDirection, slideDuration, currentItem, setCurrentItem, carouselStyle, setCarouselStyle }: Props) => {
     const [slideDelay, setSlideDelay] = useState(false);
 
     const nItems = data.length
@@ -97,7 +98,8 @@ const Carousel = ({ component, data, containerStyle, autoSlide, slideDirection, 
                 prevAction={prevItem}
                 currentItem={currentItem}
                 setCurrentItem={setCurrentItem}
-                layout="bg-BackDrop_d_xs absolute z-[7] w-full h-full"
+                layout={`bg-BackDrop_d_xs absolute z-[7] w-full h-full`}
+                carouselBtns={carouselBtns}
             />
         </div>
     )

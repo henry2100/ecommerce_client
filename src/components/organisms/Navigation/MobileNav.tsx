@@ -4,6 +4,8 @@ import userDefaultIcon from '../../../assets/svg/navIcons/navMenuIcons/user_line
 import userIcon_w from '../../../assets/svg/user-white.svg';
 import userIcon_d from '../../../assets/svg/user-black.svg';
 import user_placeholder from '../../../assets/svg/User_2.svg';
+import sunIcon from '../../../assets/svg/sun.svg';
+import moonIcon from '../../../assets/svg/moon.svg';
 import Toggle from '../../atoms/Toggle';
 import navMenu from 'components/molecules/navMenu';
 import { connect } from 'react-redux';
@@ -20,11 +22,6 @@ const MobileNav = (props) => {
     const userEmail = props.userData?.data?.email;
     const userProfileImg = props.userData?.data?.imageUrl;
 
-    console.log("userStatus:", {
-        userStatus: userStatus,
-        userData: props.userData?.data?.username
-    });
-
     const { navMenuItems } = navMenu(props.userLoggedIn, handleLogout);
 
     const handleSideNavClick = (e, item) => {
@@ -35,6 +32,7 @@ const MobileNav = (props) => {
         const base_url = item.navType === 'dash' ? '/dashboard' : '/auth';
 
         navigate(`${base_url}/${ToSnakeCase(item.navItem)}`);
+        props.setShowModal(false);
     }
 
     return (
@@ -45,18 +43,18 @@ const MobileNav = (props) => {
             closeBtnStyle='hidden'
         >
             <div className='flex flex-col gap-8 h-full'>
-                <div className='flex items-center gap-5 p-8 pb-2'>
-                    <span className='w-9 h-9 rounded-full border border-Primary overflow-hidden'>
+                <div className='flex items-center gap-2 p-5 py-3 border-b border-Primary_200'>
+                    <span className='w-10 h-10 rounded-full overflow-hidden flex-shrink-0'>
                         <img src={userStatus
                             ? userProfileImg
                                 ? userProfileImg
                                 : user_placeholder
                             : user_placeholder
-                        } alt='user-profile' className='w-full h-full' />
+                        } alt='user-profile' className='w-full h-full object-cover object-center' />
                     </span>
-                    <span className={`${props.darkMode ? 'text-Primary' : 'text-PrimaryActive'} font-semibold`}>
+                    <span className={`${props.darkMode ? 'text-Primary' : 'text-PrimaryActive'} font-semibold truncate`}>
                         {userStatus
-                            ? <p className='text-xl mobile:text-lg'>{userEmail}</p>
+                            ? <p className='text-lg mobile:text-base'>{userEmail}</p>
                             : <p className='text-base mobile:text-sm'>Sign In</p>
                         }
                     </span>
@@ -80,7 +78,7 @@ const MobileNav = (props) => {
                     </div>
                     <div className={`${props.darkMode ? 'bg-Primary_600' : 'bg-PrimaryDisabled'} bg-PrimaryDisabled flex justify-between items-center gap-3 group text-slate-500 rounded-md px-5 py-2`}>
                         <span className={`${props.darkMode ? 'text-Primary' : 'text-PrimaryActive'} font-normal text-base`}>
-                            Dark Mode
+                            <img src={props.darkMode ? moonIcon : sunIcon} alt='weather_icon' className='w-4 h-4' onClick={props.toggleDarkMode} />
                         </span>
                         <Toggle
                             handleClick={props.toggleDarkMode}
@@ -99,7 +97,7 @@ const MobileNav = (props) => {
 
 const mapStateToProps = state => ({
     userLoggedIn: state.auth.user_loggedIn,
-    userData: state.auth.user_authData,
+    userData: state.auth?.user_authData,
     darkMode: state.app.darkMode
 })
 

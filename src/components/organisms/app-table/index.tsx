@@ -12,6 +12,7 @@ type TableProps = {
   columns: TableColumn[];
   data: any[];
   loading?: boolean;
+  darkMode: boolean;
   loaderHeight?: string
   errorState?: boolean;
   empty?: boolean;
@@ -21,15 +22,11 @@ type TableProps = {
   getCurrentPage: (pageNum: number) => void;
 };
 
-const AppTable: React.FC<TableProps> = ({ columns, data, itemsPerPage, loading, loaderHeight, errorState, addedStyle, dataLength, getCurrentPage}) => {
+const AppTable: React.FC<TableProps> = ({ columns, data, itemsPerPage, loading, darkMode, loaderHeight, errorState, addedStyle, dataLength, getCurrentPage}) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const pagesValue = dataLength / itemsPerPage
   const totalPages = dataLength ? Math.ceil( pagesValue ) : Math.ceil(data.length / itemsPerPage);
-
-  // console.log("totalPages:", totalPages);
-  // console.log("dataLength:", dataLength);
-  // console.log("length_test:", data.length);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -42,8 +39,8 @@ const AppTable: React.FC<TableProps> = ({ columns, data, itemsPerPage, loading, 
 
   return (
     <div className={`relative flex flex-col ${data.length < 10 ? 'min-h-[15vh]' : 'min-h-[60vh]'}`}>
-      <div className="overflow-x-auto rounded-lg bg-white mb-10">
-        <table className={`min-w-full mobile:min-h-full ${loading && !loaderHeight && 'min-h-[587px]'} ${loading && loaderHeight && 'min-h-[406px]'} ${errorState && 'min-h-[300px]'} divide-y divide-gray-200`}>
+      <div className={`${darkMode ? 'bg-Primary_800' : 'bg-Primary_Accents_xs'} overflow-x-auto rounded-lg mb-10`}>
+        <table className={`min-w-full mobile:min-h-full ${loading && !loaderHeight && 'min-h-[587px]'} ${loading && loaderHeight && 'min-h-[406px]'} ${errorState && 'min-h-[300px]'} divide-y ${darkMode ? 'divide-PrimaryActive' : 'divide-gray-200'}`}>
           <TableHeader columns={columns}/>
           { loading ?
             <div className={`absolute z-10 flex items-center py-10 justify-center w-full h-[80%] ${addedStyle}`}>
@@ -53,7 +50,7 @@ const AppTable: React.FC<TableProps> = ({ columns, data, itemsPerPage, loading, 
             </div> 
           
           :!errorState && data.length > 0 ? 
-            <TableBody columns={columns} data={currentData}/>
+            <TableBody columns={columns} data={currentData} darkMode={darkMode}/>
           
           : <tbody>
               <ErrorEmptyState img={true}/>
@@ -71,4 +68,8 @@ const AppTable: React.FC<TableProps> = ({ columns, data, itemsPerPage, loading, 
   );
 };
 
-export default AppTable
+const mapStateToProps = (state: any) => ({
+  darkMode: state.app.darkMode
+})
+
+export default connect(mapStateToProps, null)(AppTable);

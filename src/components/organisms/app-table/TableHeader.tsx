@@ -4,10 +4,9 @@ import TableHeaderCell from './TableHeaderCell';
 
 type TableHeaderProps = {
   columns: TableColumn[];
-  darkMode?: boolean,
 };
 
-const TableHeader: React.FC<TableHeaderProps> = ({ columns, darkMode }) => {
+const TableHeader: React.FC<TableHeaderProps> = ({ columns }) => {
   return (
     <thead>
       <tr>
@@ -17,6 +16,6 @@ const TableHeader: React.FC<TableHeaderProps> = ({ columns, darkMode }) => {
       </tr>
     </thead>
   );
-};
+}
 
 export default TableHeader;

@@ -66,7 +66,7 @@ const Profile = (props) => {
         { title: 'Transaction History', style: ``, icon: archiveBook_d, iconActive: archiveBook_w },
         { title: 'My Products', style: `${props.role === 'seller' ? 'block' : 'hidden'}`, icon: productIcon_d, iconActive: productIcon_w },
         { title: 'Add Product', style: `${props.role === 'seller' ? 'block' : 'hidden'}`, icon: addProduct_d, iconActive: addProduct_w },
-        { title: 'Profile Settings', style: ``, icon: userSettings_d, iconActive: userSettings_w },
+        // { title: 'Profile Settings', style: ``, icon: userSettings_d, iconActive: userSettings_w },
     ]
 
     const matchedNavItem = sideNavData.filter(item => ToSnakeCase(item.title) === currentPath);
@@ -101,7 +101,7 @@ const Profile = (props) => {
     const handleProfileUpdate = () => {
         setLoading(true)
         userProfileImg.forEach(async file => {
-            const resUrl = await UploadFile(file);
+            const resUrl = await UploadFile(file, '', props.darkMode);
 
             if (resUrl !== undefined) updateProfile({ imageUrl: resUrl.url }, 'update_profile_img');
 
@@ -172,7 +172,7 @@ const Profile = (props) => {
     const profileUpdateBtn = (
         <div className='absolute right-0 top-0 w-fit flex flex-col justify-end items-end gap-1'>
             <button
-                className='group flex justify-center items-center text-xs gap-1 hover:text-Success transition ease-in duration-250'
+                className={`${props.darkMode ? 'text-PrimaryDisabled' : 'text-Primary'} group flex justify-center items-center text-xs gap-1 hover:text-Success transition ease-in duration-250`}
                 onClick={handleProfileUpdate}
             >
                 <p className='tablet:hidden'>Add</p>
@@ -181,7 +181,7 @@ const Profile = (props) => {
             </button>
 
             <button
-                className='flex justify-center items-center text-xs gap-1 text-Danger'
+                className={`${props.darkMode ? 'text-PrimaryDisabled' : 'text-Primary'} flex justify-center items-center text-xs gap-1 text-Danger`}
                 onClick={() => setUserProfileImg([])}
             >
                 <p className='tablet:hidden'>Cancel</p>
@@ -191,7 +191,7 @@ const Profile = (props) => {
     )
 
     const removeProfileImagBtn = (
-        <div className='absolute right-0 top-0 w-fit flex justify-end items-center hover:text-Danger transition ease-in duration-250'>
+        <div className={`${props.darkMode ? 'text-PrimaryDisabled' : 'text-Primary'} absolute right-0 top-0 w-fit flex justify-end items-center hover:text-Danger transition ease-in duration-250`}>
             <button
                 className='flex justify-center items-center text-xs gap-2'
                 onClick={() => updateProfile({ imageUrl: '' }, 'remove_profile_img')}
@@ -240,11 +240,12 @@ const Profile = (props) => {
             <div className={`${props.darkMode ? 'bg-Primary_800' : 'shadow-[0_8px_30px_rgb(0,0,0,0.12)] bg-white'} relative rounded-2xl p-5`}>
                 <div className='relative rounded-lg w-full min-h-[20vh] flex mobile:flex-col gap-5 mb-12'>
 
-                    <div className='relative desktop:w-1/5 w-1/3 mobile:w-full flex flex-col gap-5 justify-center items-center' style={{ height: 'auto' }}>
+                    <div className={`${loading ? 'justify-center items-center' : 'flex-col justify-between gap-12'} relative desktop:w-1/5 w-1/3 mobile:w-full flex flex-col gap-5 justify-center items-center`} style={{ height: 'auto' }}>
                         {loading
-                            ? <div className='absolute z-10 flex items-center py-10 justify-center w-full h-full'>
-                                <Spinner borderStyle='border-4 border-PrimaryActive border-r-transparent w-8 h-8' />
-                            </div>
+                            ? <Spinner
+                                textStyle='text-lg font-semibold text-Primary'
+                                borderStyle='border-4 border-Primary border-r-transparent w-8 h-8'
+                            />
 
                             : <>
                                 {profileImgComp}
@@ -271,12 +272,20 @@ const Profile = (props) => {
                     </div>
 
                 </div>
-                {/* ${selected === 'transaction_history' && 'pr-5'} */}
+
                 <div className={`min-h-fit flex mobile:flex-col gap-5`}>
-                    <div className={`${props.darkMode ? 'bg-PrimaryActive' : 'custom_border bg-Primary_200'} relative rounded-lg p-3 mobile:p-3 desktop:min-w-1/5 desktop:w-1/5 w-fit mobile:w-full flex flex-col flex-shrink-0`}>
+                    <div className={`${props.darkMode ? 'bg-Primary_700' : 'custom_border bg-Primary_200'} relative rounded-lg p-3 mobile:p-3 desktop:min-w-1/5 desktop:w-1/5 w-fit mobile:w-full flex flex-col flex-shrink-0`}>
                         <div className='flex flex-col mobile:flex-row mobile:justify-evenly flex-shrink-0 gap-2 sticky mobile:relative top-10 mobile:top-0'>
                             {sideNavData.map((item, i) => (
-                                <div key={i} className={`${item.style} ${ToSnakeCase(item.title) === selected ? `${props.darkMode ? 'bg-Primary_600 text-Primary_200 hover:text-Primary' : 'bg-PrimaryActive text-white'}` : 'text-PrimaryActive'} desktop:w-full tablet:w-fit flex items-center justify-start gap-2 text-PrimaryActive hover:bg-Primary_300 mobile:hover:bg-PrimaryActive hover:text-white transaition-all rounded-md p-3 mobile:p-[6px] cursor-pointer`}
+                                <div key={i} className={`${item.style} ${ToSnakeCase(item.title) === selected
+                                        ? `${props.darkMode
+                                            ? 'bg-Primary_800 text-Primary_200'
+                                            : 'bg-Primary text-white'}`
+                                        : `${props.darkMode
+                                            ? 'text-Primary_300'
+                                            : 'text-Primary'
+                                        }`} 
+                                        hover:bg-Primary_Accents_md desktop:w-full tablet:w-fit flex items-center justify-start gap-2 transaition-all rounded-md p-3 mobile:p-[6px] cursor-pointer`}
                                     onClick={e => handleClick(e, item)}
                                 >
                                     <img src={ToSnakeCase(item.title) === selected ? item.iconActive : item.icon} alt='navItem_icon' className='w-5 h-5 mobile:w-7 mobile:h-7' />
@@ -285,7 +294,7 @@ const Profile = (props) => {
                             ))}
                         </div>
                     </div>
-                    <div className='w-full border-[.5px] rounded-lg p-5 mobile:p-0 shadow-custom_border overflow-scroll'>
+                    <div className={`${props.darkMode ? 'bg-Primary_900' : 'bg-PrimaryDisabled'} p-2 mobile:p-1 w-full rounded-lg shadow-custom_border overflow-scroll`}>
                         <Outlet />
                     </div>
                 </div>

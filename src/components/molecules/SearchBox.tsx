@@ -5,32 +5,30 @@ import closeIcon from '../../assets/svg/close_x_red.svg';
 import searchIcon from '../../assets/svg/navIcons/search_linear.svg';
 import { connect } from 'react-redux';
 import { storeSearchQuery } from '../../redux/app/app.action';
-import { trimString } from 'components/atoms/CaseManager';
 
 const SearchBox = (props) => {
 
-    console.log("Test:", {
-        showSearch: props.showSearch
-    });
-
     return (
-        <div className={`${props.layout} animate-fade_in flex justify-center items-center gap-3 pt-2`}>
-            <img src={searchIcon} alt='search-box' className='w-5 h-5' />
+        <div className={`${props.layout} relative animate-fade_in flex items-center gap-2`}>
+            <span className='absolute z-10 left-2 w-5 h-5'>
+                <img src={searchIcon} alt='search-box' className='w-full h-full object-cover object-center'/>
+            </span>
             <FormInput
-                type='search'
-                name='search_query'
+                type='text'
                 placeholder='Search...'
-                inputStyle="border-b border-transparent rounded-none !bg-NoColor text-PrimaryActive"
-                inputStyle2='!p-1'
+                inputStyle="text-PrimaryActive justify-end"
+                inputStyle2='!w-[85%] mobile:!w-[78%]'
                 style='w-full'
+                indicatorStyle='hidden'
                 value={props.search_query}
-                // onChange={e => props.storeSearchQuery(trimString(e.target.value))}
                 onChange={e => props.storeSearchQuery(e.target.value)}
+                img={closeIcon}
+                imgStyle='w-4 h-4 cursor-pointer'
+                imgOnClick={() => {
+                    props.setShowSearch(false);
+                    props.storeSearchQuery('');
+                }}
             />
-            <img src={closeIcon} alt='search-box' className='w-4 h-4 cursor-pointer' onClick={() => {
-                props.setShowSearch(false);
-                props.storeSearchQuery('');
-            }} />
         </div>
     )
 }

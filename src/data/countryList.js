@@ -174,6 +174,6 @@ const africanCountries = [
     countryCode: 'KR',
     capital: 'Seoul'
   }
-];
+].sort();
 
 export default africanCountries;

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 const FormTextArea = (props) => {
     return (
         <div className={`a ${props.layoutStyle} flex flex-col`}>
-            {props.label && <label className={`${props.labelStyle} mb-2`}>{props.label}</label>}
+            {props.label && <label className={`${props.labelStyle} ${props.darkMode ? 'text-Primary' : 'text-PrimaryActive'} mb-2`}>{props.label}</label>}
 
             <div className={`${props.inputContainerStyle} flex`}>
                 <span className={`d-span flex ${props.inputStyle} ${props.darkMode ? 'bg-Primary_600 !border-none text-Primary_200' : 'bg-white'} items-start rounded-md overflow-hidden relative`}>
