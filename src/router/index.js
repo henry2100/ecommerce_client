@@ -13,6 +13,9 @@ import Dashboard from '../pages/dashboard';
 import Home from '../pages/dashboard/Home';
 // import Shop from '../pages/dashboard/Shop_old';
 import Product from '../pages/dashboard/Product';
+import Cart from '../pages/dashboard/Cart';
+import Checkout from '../pages/dashboard/Checkout';
+import OrderInvoice from '../pages/dashboard/Checkout/OrderInvoice';
 import ContactUs from '../pages/dashboard/ContactUs';
 import Settings from '../pages/dashboard/Settings'
 import Profile from '../pages/dashboard/Profile';
@@ -56,6 +59,9 @@ const AppRouter = (props) => {
                     </Route>
                     {/* <Route exact path='/dashboard/product/:id' element={userAvailable ? <Product/> : <Navigate to='/dashboard/home'/>}/> */}
                     <Route exact path='/dashboard/product/:id' element={<Product/>}/>
+                    <Route exact path='/dashboard/cart' element={<Cart/>}/>
+                    <Route exact path='/dashboard/checkout' element={<Checkout/>}/>
+                    <Route exact path='/dashboard/order_invoice' element={<OrderInvoice/>}/>
                     <Route exact path='/dashboard/contact_us' element={<ContactUs />} />
                     <Route exact path='/dashboard/settings' element={<Settings />} />
                 </Route>

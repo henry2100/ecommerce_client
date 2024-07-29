@@ -30,11 +30,11 @@ const Login = (props) => {
 
     const verifyUser = async (reqData: any) => {
         setLoading(true);
-        const res = await postRequest(`${BASE_URL}users/user/login`, { headers: headers }, reqData);
+        const res = await postRequest(`${BASE_URL}users/user/login`, headers, reqData);
 
         if (res?.status === 200) {
             setLoading(false);
-            Alert('success', res?.data.message);
+            Alert('success', res?.data.message, props.darkMode);
 
             props.storeUserData({...props.user_authData, ...res?.data});
             props.setUserLogStatus(true);
@@ -54,13 +54,13 @@ const Login = (props) => {
     }
 
     return (
-        <div className='bg-Background1 shadow-2xl flex mobile:flex-col-reverse desktop:max-w-[40vw] max-w-[60vw] mobile:max-w-[100vw] mobile:w-[70vw] desktop:rounded-2xl rounded-xl overflow-hidden'>
+        <div className={`${props.darkMode ? 'bg-Primary_700' : 'bg-Background1'} shadow-2xl flex mobile:flex-col-reverse desktop:max-w-[40vw] max-w-[60vw] mobile:max-w-[100vw] mobile:w-[70vw] desktop:rounded-2xl rounded-xl overflow-hidden`}>
             <span className='desktop:w-1/2 w-2/5 mobile:w-full mobile:h-[50px] overflow-hidden'>
                 <img src={loginImg} alt='loginImg' className='w-full h-full object-center object-cover scale-105' />
             </span>
-            <form onSubmit={handleSubmit} className='desktop:w-1/2 w-3/5 mobile:w-full  flex flex-col justify-evenly gap-5 p-5'>
+            <form onSubmit={handleSubmit} className={`${props.darkMode ? 'bg-Primary_700' : 'bg-Background1'} desktop:w-1/2 w-3/5 mobile:w-full  flex flex-col justify-evenly gap-5 p-5`}>
                 <div className='flex justify-center items-center'>
-                    <p className='text-2xl font-bold'>Login</p>
+                    <p className={`${props.darkMode ? 'text-PrimaryDisabled' : 'text-Primary'} text-2xl font-bold`}>Login</p>
                 </div>
 
                 <div className='flex flex-col gap-2'>
@@ -102,13 +102,14 @@ const Login = (props) => {
 
                         : 'Login'
                     }
-                    btnStyle={`px-5 py-2 w-full font-bold text-lg mobile:text-sm text-white bg-Primary ${!disableBtn && 'hover:bg-Primary_Accents_3xl'}`}
+                    // btnStyle={`px-5 py-2 w-full font-bold text-lg mobile:text-sm text-white bg-Primary ${!disableBtn && 'hover:bg-Primary_Accents_3xl'}`}
+                    btnStyle={`${props.darkMode ? 'bg-Primary_800 text-Primary' : 'bg-SecondaryAccent5 text-Primary'} hover:bg-Primary_Accents_md w-full mobile:w-full relative right-0 top-0 z-[22] mb-0 text-sm !rounded-lg truncate flex gap-4 justify-center items-center px-5 py-2 font-normal text-base leading-7 rounded-lg truncate transition ease-in-out duration-250`}
                     disabled={disableBtn}
                     disabledClass={`${disableBtn && 'cursor-not-allowed !text-GrayCustom2 bg-PrimaryDisabled'}`}
                 />
 
                 <div className='flex flex-col gap-1 justify-center items-center'>
-                    <p className='font-normal text-sm mobile:xs text-SecondaryAccent6'>No account yet?
+                    <p className={`${props.darkMode ? 'text-Primary_200' : 'text-SecondaryAccent6'} font-normal text-sm mobile:xs`}>No account yet?
                         <span
                             className='font-semibold text-Primary hover:underline cursor-pointer ml-1'
                             onClick={() => navigate('/auth/create_account')}
@@ -129,6 +130,7 @@ const Login = (props) => {
 }
 
 const mapStateToProps = state => ({
+    darkMode: state.app.darkMode,
     user_loggedIn: state.auth.user_loggedIn,
     user_authData: state.auth.user_authData
 });

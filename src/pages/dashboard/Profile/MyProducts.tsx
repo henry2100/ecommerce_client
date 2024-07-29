@@ -6,13 +6,17 @@ import Alert from 'components/atoms/Alert';
 import { connect } from 'react-redux';
 import ErrorEmptyState from 'components/atoms/ErrorEmptyState';
 import Pagination from 'components/organisms/app-table/Pagination';
+import reloadIcon from '../../../assets/svg/refresh.svg';
 
 const MyProducts = (props: any) => {
     const [loading, setLoading] = useState(false);
+    const [refresh, setRefresh] = useState(Boolean);
     const [products, setProducts] = useState<any>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageNum, setPageNum] = useState<any>(null);
-    const [recordsPerPage] = useState(12);
+    const [recordsPerPage] = useState(8);
+
+    const refreshState = () => setRefresh(prevState => !prevState);
 
     const headers = {
         "Content-Type": "application/json",
@@ -68,11 +72,18 @@ const MyProducts = (props: any) => {
                     borderStyle='border-4 border-Primary border-r-transparent w-8 h-8'
                 />
 
-                : <div className={`${products.length < 1 ? 'flex flex-row justify-center items-center' : 'grid'} desktop:grid-cols-4 tablet:grid-cols-2 desktop:gap-8 gap-6 mobile:gap-4`}>
+                : <div className={`${products.length < 1 ? 'flex flex-row justify-center items-center' : 'grid desktop:py-8 py-6 mobile:p-2'} desktop:grid-cols-4 grid-cols-3 mobile:grid-cols-1 mx-auto desktop:gap-8 gap-6 mobile:gap-4`}>
                     {products.length < 1
-                        ? <ErrorEmptyState img={true}
+                        ? <ErrorEmptyState
+                            img={true}
                             errorMssg='You have not uploaded any products yet'
-                            style='!relative'
+                            style='!bg-NoColor !border-none left-0 right-0 bottom-0 mx-auto !relative'
+                            btn={true}
+                            btnText='Reload'
+                            btnStyle="!bg-Primary_200 !text-Primary"
+                            btnImg={reloadIcon}
+                            btnImgStyle={`w-4 h-4 transition ease-in-out duration-500 ${loading && 'animate-fullRoll'}`}
+                            onClick={refreshState}
                         />
 
                         : currentData.map((item, i) => (

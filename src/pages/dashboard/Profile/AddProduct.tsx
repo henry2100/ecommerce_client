@@ -16,12 +16,14 @@ import { connect } from 'react-redux';
 import UploadFile from 'components/molecules/Uploader';
 import axios from 'axios';
 import { ToTitleCase } from 'components/atoms/CaseManager';
+import DropdownCard from 'components/atoms/DropdownCard';
 
 const acceptedFileExt = {
     'image/png': ['.png'],
     'image/jpeg': ['.jpeg'],
     'image/jpg': ['.jpg'],
-    'image/webp': ['.webp']
+    'image/webp': ['.webp'],
+    'image/avif': ['.avif']
 }
 
 const AddProduct = (props: any) => {
@@ -41,8 +43,6 @@ const AddProduct = (props: any) => {
 
     const [prodImages, setProdImages] = useState<any>([]);
     const [imgUploadRes, setImgUploadRes] = useState<any>([]);
-
-    console.log('userData:', props.userData.data.country.currencySymbol);
 
     const formComplete = prodName !== '' || prodPrice !== '' || prodQuantity !== '' || selectedCategory !== '' || selectedProdTags.length >= 1 || prodImages.length >= 2;
 
@@ -88,15 +88,13 @@ const AddProduct = (props: any) => {
         // console.log("Add_product_res:", res);
 
         if (res?.status === 200) {
-            Alert('success', res?.data.message);
+            Alert('success', res?.data.message, props.darkMode);
             handleCancelled();
         } else {
             res?.data.message !== undefined && Alert('error', res?.data.message);
             setLoading(false);
         }
     }
-
-    // console.log("prodImages:", prodImages);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -106,7 +104,7 @@ const AddProduct = (props: any) => {
 
             try {
                 // Wait for all upload promises to resolve
-                const uploadPromises = prodImages.map(file => UploadFile(file));
+                const uploadPromises = prodImages.map(file => UploadFile(file, '', props.darkMode));
                 const uploadResults = await Promise.all(uploadPromises);
 
                 // Aggregate the URLs from the results
@@ -156,8 +154,8 @@ const AddProduct = (props: any) => {
     }
 
     return (
-        <div className='flex mobile:flex-col justify-between gap-5 w-full p-[2px] overflow-hidden'>
-            <form onSubmit={handleSubmit} className='desktop:w-3/5 w-3/4 mobile:w-full flex flex-col flex-shrink gap-4 shadow-custom_border border-[.5px] bg-Background1 p-5 rounded-md'>
+        <div className={`${props.darkMode ? 'bg-Primary_800' : 'bg-Primary_200'} p-2 mobile:p-0 rounded-md flex mobile:flex-col justify-between gap-5 w-full overflow-hidden`}>
+            <form onSubmit={handleSubmit} className={`${props.darkMode ? 'bg-Primary_700' : 'bg-white'} desktop:w-3/5 w-3/4 mobile:w-full flex flex-col flex-shrink gap-4 p-5 rounded-md`}>
                 <div className='flex tablet:flex-col gap-5'>
                     <FormInput
                         type='text'
@@ -166,7 +164,7 @@ const AddProduct = (props: any) => {
                         label="Product Name"
                         labelStyle="font-normal text-sm leading-6 text-Black2"
                         inputStyle="border border-transparent text-PrimaryActive"
-                        style='w-2/3'
+                        style='w-2/3 tablet:w-full'
                         value={prodName}
                         onChange={e => setProdName(e.target.value)}
                     />
@@ -176,7 +174,7 @@ const AddProduct = (props: any) => {
                             type="text"
                             placeholder='Category'
                             style={` w-full relative z-[12]`}
-                            inputStyle="border border-transparent text-PrimaryActive w-full bg-white"
+                            inputStyle={`border border-transparent text-PrimaryActive w-full ${props.darkMode ? 'bg-Primary_600 !border-none text-Primary_200' : 'bg-white'}`}
                             label="Select Category"
                             labelStyle="font-normal text-sm leading-6 text-Black2"
                             inputStyle2='disabled cursor-pointer'
@@ -199,9 +197,12 @@ const AddProduct = (props: any) => {
                             imgOnClick={() => setCategoryDropdown(prevState => !prevState)}
                         />
                         {categoryDropdown &&
-                            <div className={`min-w-[150px] max-w-3/5 w-fit max-h-[200px] overflow-scroll flex flex-col gap-0 absolute z-10 right-0 p-1 bg-white rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] h-fit animate-slide_down2`}>
+                            <DropdownCard
+                                handleClickOut={setCategoryDropdown}
+                                cardLayout={`${props.darkMode ? 'bg-Primary_800' : 'bg-white'} min-w-[150px] max-w-3/5 w-fit max-h-[200px] overflow-scroll flex flex-col gap-0 absolute z-10 right-0 rounded-md custom_container shadow-[0_8px_30px_rgb(0,0,0,0.12)] h-fit animate-slide_down2`}
+                            >
                                 {filteredData?.length === 0
-                                    ? <span className='cursor-default font-normal text-sm leading-6 text-Danger rounded-md p-2 hover:bg-BackDrop_d_xs'>
+                                    ? <span className={`${props.darkMode ? 'bg-Primary_800' : 'bg-white'} cursor-default font-normal text-sm leading-6 text-Danger p-2 hover:bg-BackDrop_d_xs`}>
                                         Not found
                                     </span>
 
@@ -211,12 +212,12 @@ const AddProduct = (props: any) => {
                                             setSelectedCategory(item.categoryName);
                                             setAvailableTags(item.subTag);
                                             setCategoryDropdown(false);
-                                        }} className='cursor-pointer font-normal text-sm leading-6 text-Primary rounded-md p-2 hover:bg-BackDrop_d_xs'>
+                                        }} className={`${props.darkMode ? 'text-slate-500 hover:text-white' : 'text-Primary hover:text-PrimaryActive'} hover:bg-Primary_Accents_xs cursor-pointer font-normal text-sm leading-6 p-2`}>
                                             {item.categoryName}
                                         </span>
                                     ))
                                 }
-                            </div>
+                            </DropdownCard>
                         }
                     </div>
                 </div>
@@ -250,15 +251,16 @@ const AddProduct = (props: any) => {
                 <div className='flex tablet:flex-col gap-5'>
 
                     <div className={`relative w-2/5 tablet:w-full flex flex-col ${selectedProdTags.length > 0 ? 'text-PrimaryActive' : 'text-Primary'}`}>
-                        <label className='font-normal text-sm leading-6 text-Black2 mb-2'>
+                        <label className={`font-normal text-sm leading-6 ${props.darkMode ? 'text-Primary' : 'text-PrimaryActive'} mb-2`}>
                             Select Product Tags
                         </label>
-                        <div className={`${selectedProdTags.length > 0 ? 'px-2 py-1' : 'p-2'} relative w-full bg-white cursor-pointer border rounded-md flex items-center`}
+                        <div className={`${selectedProdTags.length > 0 ? 'px-2 py-1' : 'p-2'} relative w-full ${props.darkMode ? 'bg-Primary_600 !border-none text-Primary_200' : 'bg-white'} cursor-pointer border rounded-md flex gap-3 items-center`}
+                            onClick={availableTags.length > 0 ? () => setProdTagsDropdown(prevState => !prevState) : () => Alert('error', 'Select Product category first')}
                         >
-                            <div className={`${selectedProdTags.length > 0 ? 'text-PrimaryActive' : 'text-Primary'} flex gap-3 items-center overflow-x-scroll custom_container w-[90%]`}>
+                            <div className={`${selectedProdTags.length > 0  && props.darkMode ? 'text-Primary_200 border-Primary_600' : 'text-Primary' ? 'text-PrimaryActive' : 'text-Primary'} flex gap-3 items-center overflow-x-scroll custom_container w-[85%]`}>
                                 {selectedProdTags.length > 0
-                                    ? selectedProdTags.map(item => (
-                                        <span className='group border px-3 py-1 whitespace-nowrap text-ellipsis rounded-md flex flex-shrink-0 gap-2 justify-between items-center transition ease-in-out duration-500'>
+                                    ? selectedProdTags.map((item, i) => (
+                                        <span key={i} className={`${props.darkMode ? 'border-PrimaryActive' : ''} group border px-3 py-1 whitespace-nowrap text-ellipsis rounded-md flex flex-shrink-0 gap-2 justify-between items-center transition ease-in-out duration-500`}>
                                             {item}
                                             <img
                                                 src={cancelIcon}
@@ -274,29 +276,31 @@ const AddProduct = (props: any) => {
                                 src={prodTagsDropdown ? arrowUp : arrowDown}
                                 alt='arrow-icon'
                                 className='absolute right-3 w-4 h-4'
-                                onClick={availableTags.length > 0 ? () => setProdTagsDropdown(prevState => !prevState) : () => Alert('error', 'Select Product category first')}
                             />
                         </div>
                         {prodTagsDropdown &&
-                            <div className={`min-w-[150px] max-w-3/5 w-fit max-h-[200px] overflow-scroll flex flex-col gap-0 absolute z-10 right-0 top-20 p-1 bg-white rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] h-fit animate-slide_down2`}
-                                // onMouseLeave={() => setProdTagsDropdown(false)}
+                            <DropdownCard
+                                handleClickOut={setProdTagsDropdown}
+                                cardLayout={`${props.darkMode ? 'bg-Primary_800' : 'bg-white'} min-w-[150px] max-w-3/5 w-fit max-h-[200px] overflow-scroll flex flex-col gap-0 absolute z-10 right-0 top-20 rounded-md custom_container shadow-[0_8px_30px_rgb(0,0,0,0.12)] h-fit animate-slide_down2`}
                             >
                                 {availableTags?.map((item, i) => (
-                                    <span key={i} onClick={() => handleTagSelection(item)} className='cursor-pointer font-normal text-sm leading-6 text-Primary rounded-md p-2 hover:bg-BackDrop_d_xs'>
+                                    <span key={i} 
+                                        onClick={() => handleTagSelection(item)} 
+                                        className={`${props.darkMode ? 'text-slate-500 hover:text-white' : 'text-Primary hover:text-PrimaryActive'} hover:bg-Primary_Accents_xs cursor-pointer font-normal text-sm leading-6 p-2`}>
                                         {item}
                                     </span>
                                 ))
                                 }
-                            </div>
+                            </DropdownCard>
                         }
                     </div>
 
                     <Dropzone
-                        className='p-2 border border-PrimaryActive rounded-md border-dashed bg-Primary_200'
+                        className={`p-2 border border-PrimaryActive rounded-md border-dashed ${props.darkMode ? 'bg-Primary_600' : 'bg-Primary_200'}`}
                         text='Drop your file here or choose file'
-                        textStyle='font-normal text-sm text-PrimaryActive'
+                        textStyle={`${props.darkMode ? 'text-Primary_300' : 'text-PrimaryActive'} font-normal text-sm text-PrimaryActive`}
                         label="Profile Image"
-                        labelStyle="font-normal text-sm leading-6 text-Black2"
+                        labelStyle={`font-normal text-sm leading-6 ${props.darkMode ? 'text-Primary' : 'text-PrimaryActive'}`}
                         style='w-3/5 tablet:w-full'
                         icon={DropzoneIcon}
                         acceptedExt={acceptedFileExt}
@@ -338,7 +342,7 @@ const AddProduct = (props: any) => {
 
                             : 'Submit'
                         }
-                        btnStyle={`px-5 py-2 w-fit mobile:w-full font-bold text-base mobile:text-sm text-white bg-Primary ${!disableBtn && 'hover:bg-Primary_Accents_3xl'}`}
+                        btnStyle={`${props.darkMode ? 'bg-Primary_600 hover:bg-PrimaryActive' : 'bg-Primary hover:bg-Primary_300'} px-5 py-2 w-fit mobile:w-full font-bold text-base mobile:text-sm text-white ${!disableBtn && 'hover:bg-Primary_Accents_3xl'}`}
                         disabled={disableBtn}
                         disabledClass={`${disableBtn && 'cursor-not-allowed !text-Primary bg-PrimaryDisabled'}`}
                         onClick={() => { }}
@@ -369,7 +373,8 @@ const mapStateToProps = state => ({
     userData: state.auth.user_authData,
     userId: state.auth.user_authData.data._id,
     accessToken: state.auth.user_authData.token.accessToken,
-    currency: state.auth.user_authData.data.country.currencySymbol
+    currency: state.auth.user_authData.data.country.currencySymbol,
+    darkMode: state.app.darkMode
 })
 
 export default connect(mapStateToProps, null)(AddProduct);

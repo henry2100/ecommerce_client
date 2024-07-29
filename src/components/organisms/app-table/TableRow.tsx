@@ -9,11 +9,12 @@ type TableRowProps = {
   columns: TableColumn[];
   rowData: any;
   style?: string;
-  tableItem?: string
+  tableItem?: string;
+  darkMode: boolean;
   selectTableItem?: (data:any) => void
 } & ReturnType<typeof mapStateToProps>;
 
-const TableRow: React.FC<TableRowProps> = ({ columns, rowData, style, tableItem, selectTableItem}) => {
+const TableRow: React.FC<TableRowProps> = ({ columns, rowData, style, tableItem, darkMode, selectTableItem}) => {
   const navigate = useNavigate()
 
   const handleClick = () => {
@@ -24,8 +25,7 @@ const TableRow: React.FC<TableRowProps> = ({ columns, rowData, style, tableItem,
   }
 
   return (
-    // <tr className={`${style} border-b border-gray-100 hover:bg-GrayCustom3 hover:bg-opacity-30 transition-all cursor-pointer`} onClick={handleClick}>
-    <tr className={`${style} border-b border-gray-100 hover:bg-GrayCustom3 hover:bg-opacity-30 transition-all cursor-pointer`}>
+    <tr className={`${style} ${darkMode ? 'border-Primary_700' : 'border-gray-100'} hover:bg-Primary_Accents_xs transition ease-in-out duration-250 cursor-pointer`}>
       {columns.map((column, columnIndex) => (
         <TableCell
           key={columnIndex}

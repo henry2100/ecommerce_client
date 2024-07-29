@@ -8,6 +8,8 @@ import ErrorEmptyState from 'components/atoms/ErrorEmptyState';
 import { trimString } from 'components/atoms/CaseManager';
 import Pagination from 'components/organisms/app-table/Pagination';
 import reloadIcon from '../../../assets/svg/refresh.svg';
+import { storeSearchQuery } from '../../../redux/app/app.action';
+import Button from 'components/atoms/Button';
 
 const Home = (props: any) => {
     const [loading, setLoading] = useState(false);
@@ -28,24 +30,18 @@ const Home = (props: any) => {
         setLoading(true);
         const res = await getRequest(`${BASE_URL}products`, headers);
 
-        console.log("Products_res:", res);
-
         if (res?.status === 200) {
             setLoading(false);
             setProducts(res?.data.data);
-            Alert('success', res?.data.message);
+            Alert('success', res?.data.message, props.darkMode);
         } else {
             setLoading(false);
-            // Alert('error', 'Error fetching Products');
         }
     }
 
-    // useEffect(() => {
-    //     refreshState();
-    // }, []);
-    
     useEffect(() => {
         getProducts();
+        props.storeSearchQuery('');
     }, [refresh]);
 
     useEffect(() => {
@@ -77,7 +73,7 @@ const Home = (props: any) => {
     }
 
     return (
-        <div className={`desktop:px-32 desktop:py-10 px-16 py-8 mobile:p-3 min-h-[90vh] flex ${loading ? 'justify-center items-center' : 'flex-col justify-between gap-12'}`}>
+        <div className={`relative desktop:px-32 desktop:py-10 px-16 py-8 mobile:p-3 min-h-[90vh] flex ${loading ? 'justify-center items-center' : 'flex-col justify-between gap-12'}`}>
             {loading
                 ? <Spinner
                     text='Fetching Products...'
@@ -85,7 +81,7 @@ const Home = (props: any) => {
                     borderStyle='border-4 border-Primary border-r-transparent w-8 h-8'
                 />
 
-                : <div className='grid desktop:grid-cols-4 tablet:grid-cols-2 desktop:gap-x-10 desktop:gap-y-16 gap-6 mobile:gap-4'>
+                : <div className='grid desktop:grid-cols-4 grid-cols-3 mobile:grid-cols-2 desktop:gap-x-10 desktop:gap-y-16 gap-6 mobile:gap-4 mt-12 mobile:mt-5' >
                     {filteredData?.length === 0
                         ? <ErrorEmptyState
                             img={true}
@@ -104,6 +100,8 @@ const Home = (props: any) => {
                                 productId={item._id}
                                 productImg={item.imageUrl}
                                 currency={item.currency}
+                                category={item.category}
+                                tags={item.tags}
                                 name={item.name}
                                 desc={item.description}
                                 price={item.price}
@@ -123,12 +121,13 @@ const Home = (props: any) => {
 }
 
 const mapStateToProps = state => ({
+    darkMode: state.app.darkMode,
     search_query: state.app.search_query,
     showSearch: state.app.search_status,
 });
 
 const mapDispatchToProps = dispatch => ({
-
+    storeSearchQuery: (data: any) => dispatch(storeSearchQuery(data))
 });
 
-export default connect(mapStateToProps, null)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

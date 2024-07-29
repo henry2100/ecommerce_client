@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import NavItem from './NavItem';
 import { ToSnakeCase } from 'components/atoms/CaseManager';
 
+import user_placeholder from '../../../assets/svg/User_2.svg';
 import cartIcon_solid from '../../../assets/svg/navIcons/shopping-cart-solid.svg';
 import cartIcon_linear from '../../../assets/svg/navIcons/shopping-cart-linear.svg';
 
@@ -16,6 +17,12 @@ import shopIconSolid from '../../../assets/svg/navIcons/shop_bold.svg';
 import searchIcon from '../../../assets/svg/navIcons/search_linear.svg';
 import searchIconSolid from '../../../assets/svg/navIcons/search_bold.svg';
 
+import sunIcon from '../../../assets/svg/sun.svg';
+import moonIcon from '../../../assets/svg/moon.svg';
+
+import contactIcon from '../../../assets/svg/navIcons/call_linear.svg';
+import contactIconSolid from '../../../assets/svg/navIcons/call_bold.svg';
+
 import { getValues } from 'services/storage';
 import MobileNav from './MobileNav';
 import navMenu from 'components/molecules/navMenu';
@@ -23,10 +30,13 @@ import useWindowSize from '../../atoms/WindowWidth';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { setUserLogStatus } from '../../../redux/auth/auth.action';
-import { toggleSearchBar } from '../../../redux/app/app.action';
+import { toggleDarkMode, toggleSearchBar } from '../../../redux/app/app.action';
 import { handleLogout } from 'utils';
 import SearchBox from 'components/molecules/SearchBox';
-import CartModal from 'components/molecules/CartModal';
+import CartModal from 'pages/dashboard/ModalComponents/CartModal';
+import DropdownCard from 'components/atoms/DropdownCard';
+import Toggle from 'components/atoms/Toggle';
+import Alert from 'components/atoms/Alert';
 
 interface Props {
     darkMode: boolean;
@@ -35,6 +45,7 @@ interface Props {
     authData: any;
     shopping_cart: any[];
     toggleSearchBar: () => void;
+    toggleDarkMode: () => void;
 }
 
 const TopNav: React.FC<Props> = (props) => {
@@ -50,16 +61,16 @@ const TopNav: React.FC<Props> = (props) => {
     const currentPath = location.pathname.split('/')[2];
 
     const userStatus = props.loggedIn;
+    const userProfileImg = props.authData?.data?.imageUrl;
 
     const { navMenuItems } = navMenu(userStatus, handleLogout);
     const { windowWidth } = useWindowSize();
 
     const navData = [
-        { navItem: 'Home', action: null, style: `${userStatus ? 'hidden' : 'block'}`, icon1: homeIconSolid, icon2: homeIcon, available: true },
-        { navItem: 'Shop', action: null, style: `${userStatus ? 'block' : 'hidden'}`, icon1: shopIconSolid, icon2: shopIcon, available: true },
-        { navItem: 'Search', action: () => props.toggleSearchBar(), style: 'block', icon1: searchIconSolid, icon2: searchIcon, available: true },
-        // { navItem: 'Contact Us', action: null, style: `${userStatus ? '' : 'block'}`, icon1: callIconSolid, icon2: callIcon, available: true },
-        // { navItem: 'Settings', action: null, style: `${userStatus ? '' : 'block'}`, icon1: settingsIconSolid, icon2: settingsIcon, available: true },
+        { navItem: 'Home', action: null, style: `${userStatus ? 'hidden' : 'flex'}`, icon1: homeIconSolid, icon2: homeIcon, available: true },
+        { navItem: 'Shop', action: null, style: `${userStatus ? 'flex' : 'hidden'}`, icon1: shopIconSolid, icon2: shopIcon, available: true },
+        { navItem: 'Contact Us', action: null, style: 'flex', icon1: contactIconSolid, icon2: contactIcon, available: true },
+        { navItem: 'Search', action: () => props.toggleSearchBar(), style: 'flex', icon1: searchIconSolid, icon2: searchIcon, available: true },
     ];
 
     const matchedNavItem = navData.find(item => ToSnakeCase(item.navItem) === currentPath);
@@ -97,35 +108,46 @@ const TopNav: React.FC<Props> = (props) => {
     };
 
     useEffect(() => {
-        navigate(`/dashboard/${props.loggedIn ? 'shop' : 'home'}`);
+        if (props.showSearch) navigate(`/dashboard/home`);
     }, [props.showSearch]);
 
     useEffect(() => {
-        if(showCartModal){
+        if (showCartModal) {
             setShowModal(false);
             setDropdown(false);
         }
-        if(showModal) {
+        if (showModal) {
             setShowCartModal(false);
             setDropdown(false);
         }
-        if(dropdown){
+        if (dropdown) {
             setShowModal(false);
             setShowCartModal(false);
         }
     }, [showCartModal, showModal, dropdown]);
 
-    useEffect(()=>{
+    useEffect(() => {
         setCartNotifyer(true);
 
-        setTimeout(() => setCartNotifyer(false), 1000);
-    }, [props.shopping_cart.length]);
+        setTimeout(() => {
+            setCartNotifyer(false);
+            Alert('success', 'Added Successfully', props.darkMode);
+        }, 1000);
+    }, [props.shopping_cart]);
 
     return (
-        <div className={`relative z-[25] flex justify-between items-center gap-5 ${props.showSearch ? 'px-5 py-[11.5px]' : 'p-5'}`}>
-            <span className='desktop:w-1/10 desktop:mx-20 nav_title_text cursor-pointer' onClick={() => navigate(`/dashboard/${userStatus ? 'shop' : 'home'}`)}>
-                <h3 className='nav_title_text text-slate-500'>Empire</h3>
-            </span>
+        <div className={`relative z-[25] flex justify-between items-center gap-5 ${props.showSearch ? 'px-5 py-4' : 'p-5'}`}>
+            <div className='desktop:w-1/10 desktop:mx-20 nav_title_text cursor-pointer flex items-center gap-3' onClick={() => navigate(`/dashboard/${userStatus ? 'shop' : 'home'}`)}>
+                <span className='flex-shrink-0 flex-grow-0 w-10 h-10'>
+                    <img src={userStatus
+                        ? userProfileImg
+                            ? userProfileImg
+                            : user_placeholder
+                        : user_placeholder}
+                        alt='user_profile' className='w-full h-full object-cover object-center object-fit rounded-full' />
+                </span>
+                <p className='nav_title_text text-Primary !font-bold !text-lg'>Empire</p>
+            </div>
 
             <span className='desktop:max-w-3/4 desktop:w-full w-fit desktop:mx-20 flex justify-end items-center gap-5'>
                 {props.showSearch ? (
@@ -140,17 +162,20 @@ const TopNav: React.FC<Props> = (props) => {
                     </span>
                 )}
 
-                <div className={`${props.showSearch ? 'tablet:hidden flex' : 'flex'} group items-center gap-3 group transition ease-in-out duration-250 cursor-pointer ml-8 mobile:ml-0 mr-0 bg-slate-100 hover:bg-Primary_300 px-3 py-1 rounded-md`}
+                <img src={props.darkMode ? moonIcon : sunIcon} alt='weather_icon' className={`${props.showSearch ? 'mobile:hidden block' : 'block'} w-5 h-5 cursor-pointer`} onClick={props.toggleDarkMode} />
+
+                <div className={`${props.showSearch ? 'mobile:hidden flex' : 'flex'} group items-center gap-2 group transition ease-in-out duration-250 cursor-pointer ml-8 mobile:ml-0 mr-0 ${props.darkMode ? 'bg-Primary_600 hover:bg-Primary_700' : 'bg-slate-100 hover:bg-Primary_300'} py-1 px-5 rounded-md`}
                     onClick={() => setShowCartModal(prevState => !prevState)}
                 >
-                    <span className={`${cartNotifyer ? 'w-[22px] h-[22px] text-Accent_blue font-bold text-sm' : 'w-5 h-5 text-Primary font-semibold text-xs'} rounded-full bg-Primary_200 group-hover:bg-white text-Primary group-hover:text-PrimaryActive flex justify-center items-center`}>
+                    <span className={`${cartNotifyer ? 'w-[24px] h-[24px] text-Accent_blue font-bold text-base mobile:text-sm' : 'w-5 h-5 text-Primary font-semibold text-sm mobile:text-xs'} rounded-full !bg-NoColor group-hover:text-white flex justify-center items-center`}>
                         {props.shopping_cart.length}
                     </span>
                     <span>
-                        <img src={cartIcon_linear} alt='cart-icon' className='block group-hover:hidden w-7 h-7 transition ease-in-out duration-250' />
-                        <img src={cartIcon_solid} alt='cart-icon' className='hidden group-hover:block w-7 h-7 transition ease-in-out duration-250' />
+                        <img src={cartIcon_linear} alt='cart-icon' className='block group-hover:hidden w-6 h-6 transition ease-in-out duration-250' />
+                        <img src={cartIcon_solid} alt='cart-icon' className='hidden group-hover:block w-6 h-6 transition ease-in-out duration-250' />
                     </span>
                 </div>
+
                 <nav className='flex justify-center items-center gap-5 flex-shrink-0 tablet:hidden'>
                     {navData.map((item, i) => (
                         <NavItem
@@ -168,15 +193,14 @@ const TopNav: React.FC<Props> = (props) => {
                         />
                     ))}
                 </nav>
-
                 <div className='w-fit relative'>
                     <div
-                        className={`px-5 py-1 flex justify-center items-center flex-shrink-0 gap-3 rounded-md ${showModal || dropdown ? 'bg-slate-300' : ''} bg-slate-100 text-slate-500 hover:bg-slate-300 cursor-pointer transition-all relative z-10`}
+                        className={`${props.darkMode ? `${showModal || dropdown && '!bg-PrimaryActive'} bg-Primary_600 text-Primary hover:bg-Primary_Accents_sm` : `${showModal || dropdown && '!bg-slate-300'} bg-slate-100 text-slate-500 hover:bg-slate-300`} px-5 py-1 flex justify-center items-center flex-shrink-0 gap-3 rounded-md cursor-pointer transition ease-in-out duration-250 relative z-10`}
                         onClick={() => {
                             if (windowWidth > 1199) {
-                                setDropdown(prevState => !prevState);
+                                setDropdown(true);
                             } else {
-                                setShowModal(prevState => !prevState);
+                                setShowModal(true);
                             }
                         }}
                     >
@@ -185,24 +209,27 @@ const TopNav: React.FC<Props> = (props) => {
                         <p>More</p>
                     </div>
 
-                    {dropdown && (
-                        <div className='absolute right-0 top-10 min-w-[200px] w-full mobile:w-[90vw] bg-white rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] animate-slide_down2 mobile:animate-slide_left z-[5] flex mobile:hidden flex-col overflow-hidden'>
+                    {dropdown &&
+                        <DropdownCard
+                            handleClickOut={setDropdown}
+                            cardLayout={`${props.darkMode ? 'bg-Primary_800' : 'bg-white'} absolute right-0 top-10 min-w-[200px] w-full mobile:w-[90vw] rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] animate-slide_down2 mobile:animate-slide_left z-[5] flex mobile:hidden flex-col overflow-hidden`}
+                        >
                             {navMenuItems.map((item, i) => (
                                 <span
                                     key={i}
                                     onClick={item.navFunc === null ? (e) => handleSideNavClick(e, item) : item.navFunc}
-                                    className={`flex items-center gap-3 group text-slate-500 hover:bg-slate-400 hover:text-white font-normal text-base mobile:text-xl px-5 py-[6px] mobile:py-3 transition-all cursor-pointer ${item.style}`}
+                                    className={`${props.darkMode ? 'text-slate-500 hover:text-white hover:bg-Primary_Accents_xs' : 'text-PrimaryActive hover:bg-Primary_Accents_xl hover:text-white'} flex items-center gap-3 group font-normal text-base mobile:text-xl px-5 py-[6px] mobile:py-3 transition-all cursor-pointer ${item.style}`}
                                 >
                                     {item.icon1 && <img src={item.icon1} alt='menu_icon' className='w-4 h-4 mobile:w-5 mobile:h-5 hidden group-hover:block' />}
                                     {item.icon2 && <img src={item.icon2} alt='menu_icon' className='w-4 h-4 mobile:w-5 mobile:h-5 block group-hover:hidden' />}
                                     {item.navItem}
                                 </span>
                             ))}
-                        </div>
-                    )}
+                        </DropdownCard>
+                    }
                 </div>
                 {showModal && <MobileNav setShowModal={setShowModal} />}
-                {showCartModal && <CartModal setShowCartModal={setShowCartModal}/>}
+                {showCartModal && <CartModal setShowCartModal={setShowCartModal} />}
             </span>
         </div>
     );
@@ -218,6 +245,8 @@ const mapStateToProps = (state: any) => ({
 
 const mapDispatchToProps = (dispatch: any) => ({
     toggleSearchBar: () => dispatch(toggleSearchBar()),
+    setUserLogStatus: (data) => dispatch(setUserLogStatus(data)),
+    toggleDarkMode: () => dispatch(toggleDarkMode())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TopNav);

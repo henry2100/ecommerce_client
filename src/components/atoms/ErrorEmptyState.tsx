@@ -1,12 +1,15 @@
 import React from 'react'
 import emptyIcon from '../../assets/svg/empty.svg';
+import emptyIcon_d from '../../assets/svg/empty-dark.svg';
 import Button from './Button';
+import { connect } from 'react-redux';
 
 type Props = {
     img: boolean
     errorMssg?: string,
     emptyImg?: string,
     style?: string,
+    darkMode:boolean,
 
     btn?: boolean
     btnText?: string,
@@ -16,21 +19,21 @@ type Props = {
     onClick?: (e:any) => void
 }
 
-const ErrorEmptyState:React.FC<Props> = ({img, errorMssg, emptyImg, style, btn, btnText, btnStyle, btnImg, btnImgStyle, onClick}) => {
+const ErrorEmptyState:React.FC<Props> = ({img, errorMssg, emptyImg, style, darkMode, btn, btnText, btnStyle, btnImg, btnImgStyle, onClick}) => {
     return (
-        <div className={`${style} absolute flex flex-col items-center py-10 justify-center w-full min-h-full border-b bg-white bg-opacity-75`}>
+        <div className={`${style} absolute flex flex-col items-center py-10 justify-center w-full min-h-full bg-BackDrop_d_xs`}>
             {img &&
                 <img 
                     src={   emptyImg 
                             ?   emptyImg
-                            :   emptyIcon
+                            :   darkMode ? emptyIcon_d : emptyIcon
                         } 
                     alt="emptyIcon" 
                     className='h-20 w-20'
                 />
             }
             <div className='p-3 mb-8'>
-                <span className='text-gray-500 text-sm font-semibold leading-5'>{errorMssg ? errorMssg : 'Oops, we have nothing to show!'}</span>
+                <span className={`${darkMode ? 'text-Primary' : 'text-PrimaryActive'} text-sm font-semibold leading-5`}>{errorMssg ? errorMssg : 'Oops, we have nothing to show!'}</span>
             </div>
             <div className={`${btn ? 'flex' : 'hidden'}`}>
                 <Button 
@@ -46,4 +49,8 @@ const ErrorEmptyState:React.FC<Props> = ({img, errorMssg, emptyImg, style, btn, 
     )
 }
 
-export default ErrorEmptyState
+const mapStateToProps = (state:any) => ({
+    darkMode: state.app.darkMode
+})
+
+export default connect(mapStateToProps, null)(ErrorEmptyState);

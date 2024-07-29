@@ -1,15 +1,15 @@
 import React from 'react'
 import { connect } from 'react-redux';
 
-type TableHeaderCellProps = ReturnType<typeof mapStateToProps> & {
+type TableHeaderCellProps = {
   label: string;
-  darkMode?: boolean
+  darkMode: boolean
 };
 
 const TableHeaderCell: React.FC<TableHeaderCellProps> = ({ label, darkMode }) => {
   return (
     <th
-      className={`px-6 py-3 text-left text-sm mobile:text-xs font-medium text-gray-500 uppercase tracking-wider truncate`}
+      className={`px-6 py-3 text-left text-xs mobile:text-xs font-medium ${darkMode ? 'text-Primary' : 'text-gray-500'} uppercase tracking-wider truncate`}
     >
       {label}
     </th>

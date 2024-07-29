@@ -2,6 +2,9 @@ import {
     DARK_MODE,
     ADD_TO_CART,
     REMOVE_FROM_CART,
+    CLEAR_CART,
+    ADD_TO_QUANTITY,
+    REMOVE_FROM_QUANTITY,
     STORE_TABLE_ITEM,
     SEARCH_QUERY,
     TOGGLE_SEARCH_BOX,
@@ -12,13 +15,27 @@ export const toggleDarkMode = () => ({
     type: DARK_MODE
 });
 
-export const addToCart = (data: any) => ({
+export const addToCart = (data: any[]) => ({
     type: ADD_TO_CART,
     payload: data
 });
 
 export const removeFromCart = (id:any) => ({
     type: REMOVE_FROM_CART,
+    payload: id
+});
+
+export const clearShoppingCart = () => ({
+    type: CLEAR_CART
+})
+
+export const addToQuantity = (id:any) => ({
+    type: ADD_TO_QUANTITY,
+    payload: id
+});
+
+export const removeFromQuantity = (id:any) => ({
+    type: REMOVE_FROM_QUANTITY,
     payload: id
 });
 

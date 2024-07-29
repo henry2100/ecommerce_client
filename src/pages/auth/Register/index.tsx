@@ -16,6 +16,8 @@ import arrowUp from '../../../assets/svg/arrows/arrow_du.svg';
 import arrowDown from '../../../assets/svg/arrows/arrow_dd.svg';
 import countryList from '../../../data/countryList';
 import { inputNum, passwordRegex, specialChar } from 'utils';
+import { connect } from 'react-redux';
+import DropdownCard from 'components/atoms/DropdownCard';
 
 const acceptedFileExt = {
     'image/png': ['.png'],
@@ -34,15 +36,6 @@ const Register = (props: any) => {
     const [userProfileImg, setUserProfileImg] = useState<any>([]);
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
-
-    // const [street, setStreet] = useState('');
-    // const [showStreet, setShowStreet] = useState(false);
-
-    // const [city, setCity] = useState('');
-    // const [showCity, setShowCity] = useState(false);
-
-    // const [state, setState] = useState('');
-    // const [showState, setShowState] = useState(false);
 
     const [userType, setUserType] = useState('');
     const [selectRoleDropdown, setSelectRoleDropdown] = useState(false);
@@ -65,6 +58,8 @@ const Register = (props: any) => {
     const [confirmPasswdStatus, setConfirmPasswdStatus] = useState(false);
     const [passwdConfirmed, setPasswdConfirmed] = useState(false);
 
+    const userId = email.split('@')[0];
+
     const navigate = useNavigate();
 
     const formComplete = firstname !== '' || lastname !== '' || userType !== '' || email !== '' || country !== '' || password !== '' || confirmPassword !== '';
@@ -73,6 +68,19 @@ const Register = (props: any) => {
 
     const headers = {
         "Content-Type": "application/json"
+    }
+
+    const addressReqData = {
+        street: '',
+        city: '',
+        state: ''
+    }
+
+    const settlementReqData = {
+        bankName: '',
+        bankCode: '',
+        accountNumber: '',
+        accountName: ''
     }
 
     const handlePassword = (e) => {
@@ -114,14 +122,14 @@ const Register = (props: any) => {
 
         if (res?.status === 200) {
             setLoading(false);
-            Alert('success', res?.data.message);
+            Alert('success', res?.data.message, props.darkMode);
 
             setTimeout(() => {
                 Alert('info', 'You should update you profile picture after Successful Login');
                 navigate('/auth/login');
             }, 2000);
         } else {
-            res?.data.message !== undefined && Alert('error', res?.data.message);
+            res?.data.message !== undefined && Alert('error', res?.data.message, props.darkMode);
             setLoading(false);
         }
     }
@@ -133,12 +141,14 @@ const Register = (props: any) => {
         const reqData = {
             firstname: firstname,
             lastname: lastname,
-            address: {},
             email: email,
+            username: email,
             password: confirmPassword,
             country: country,
             role: userType,
-            imageUrl: ''
+            imageUrl: '',
+            address: addressReqData,
+            settlementInfo: settlementReqData,
         }
 
         if (formComplete) {
@@ -147,23 +157,23 @@ const Register = (props: any) => {
 
                     if (userProfileImg.length > 0) {
                         try {
-                            const uploadPromises = userProfileImg.map(file => UploadFile(file, `${email}`));
+                            const uploadPromises = userProfileImg.map(file => UploadFile(file, userId, props.darkMode));
                             const uploadResult = await Promise.all(uploadPromises);
 
                             console.log("uploadResult:", uploadResult);
-                            
+
                             const imageUrl = uploadResult[0].url
 
                             verifyUser({ ...reqData, imageUrl: imageUrl });
                         } catch (error) {
-                            Alert('error', 'Error uploading your profile image');
+                            Alert('error', 'Error uploading your profile image', props.darkMode);
                         }
                     } else {
                         verifyUser(reqData);
                     }
                 } else {
                     setLoading(false);
-                    Alert('error', 'Password does not match');
+                    Alert('error', 'Password does not match', props.darkMode);
 
                     setTimeout(() => {
                         setPassword('');
@@ -172,7 +182,7 @@ const Register = (props: any) => {
                 }
             } else {
                 setLoading(false);
-                Alert('error', 'Password must have at least one digit or special character to be more secure');
+                Alert('error', 'Password must have at least one digit or special character to be more secure', props.darkMode);
             }
         } else {
             setLoading(false);
@@ -189,14 +199,14 @@ const Register = (props: any) => {
     })
 
     return (
-        <div className='relative bg-Background1 shadow-2xl flex mobile:flex-col-reverse desktop:max-w-[40vw] max-w-[60vw] mobile:max-w-[100vw] mobile:w-[70vw] desktop:rounded-2xl rounded-xl'>
-            <span className='desktop:w-1/4 w-2/5 mobile:w-full mobile:h-[50px] overflow-hidden desktop:rounded-l-2xl rounded-l-xl'>
+        <div className={`relative ${props.darkMode ? 'bg-Primary_700' : 'bg-Background1'} shadow-2xl flex mobile:flex-col-reverse desktop:max-w-[40vw] max-w-[60vw] mobile:max-w-[100vw] mobile:w-[80vw] desktop:rounded-2xl rounded-xl`}>
+            <span className='desktop:w-1/4 w-2/5 mobile:w-full mobile:h-[50px] overflow-hidden desktop:rounded-l-2xl rounded-b-xl'>
                 <img src={loginImg} alt='loginImg' className='w-full h-full object-center object-cover scale-105' />
             </span>
 
             <form onSubmit={handleSubmit} className='desktop:w-3/4 w-3/5 mobile:w-full  flex flex-col justify-evenly gap-5 p-5'>
                 <div className='flex justify-center items-center'>
-                    <p className='text-2xl font-bold'>Create Account</p>
+                    <p className={`${props.darkMode ? 'text-PrimaryDisabled' : 'text-Primary'} text-2xl font-bold`}>Create Account</p>
                 </div>
 
                 <div className='flex flex-col gap-2'>
@@ -205,7 +215,7 @@ const Register = (props: any) => {
                             type='text'
                             name='firstname'
                             placeholder="Firstname"
-                            style='w-1/2'
+                            style='w-1/2 mobile:w-full'
                             inputStyle="border border-transparent text-Black2 w-full"
                             label="Firstname"
                             labelStyle="font-normal text-sm leading-6 text-Black2"
@@ -217,7 +227,7 @@ const Register = (props: any) => {
                             type='text'
                             name='lastname'
                             placeholder="Lastname"
-                            style='w-1/2'
+                            style='w-1/2 mobile:w-full'
                             inputStyle="border border-transparent text-Black2 w-full"
                             label="Lastname"
                             labelStyle="font-normal text-sm leading-6 text-Black2"
@@ -239,15 +249,19 @@ const Register = (props: any) => {
                             setFile={setUserProfileImg}
                         />
 
-                        <div className={`relative z-[22] w-2/5 tablet:w-full flex flex-col ${userType !== '' ? 'text-PrimaryActive' : 'text-Primary'}`}
-                            onClick={() => setSelectRoleDropdown(prevState => !prevState)}
-                        >
-                            <label className='font-normal text-sm leading-6 text-Black2 mb-2'>
+                        <div className={`relative z-[22] w-2/5 tablet:w-full flex flex-col ${userType !== '' ? 'text-PrimaryActive' : 'text-Primary'}`}>
+                            <label className={`font-normal text-sm leading-6 ${props.darkMode ? 'text-Primary' : 'text-PrimaryActive'} mb-2`}>
                                 Select Role
                             </label>
-                            <div className={`relative z-20 w-full bg-white cursor-pointer border rounded-md flex items-center p-2`}
+                            <div className={`relative z-20 w-full ${props.darkMode ? 'bg-Primary_600 !border-none text-Primary_200' : 'bg-white'} cursor-pointer border rounded-md flex items-center p-2`}
+                                onClick={() => setSelectRoleDropdown(prevState => !prevState)}
                             >
-                                <div className={`${userType !== '' ? 'text-PrimaryActive' : 'text-Primary'} flex gap-3 items-center overflow-x-scroll custom_container w-[90%]`}>
+                                <div className={`${userType !== ''
+                                    ? props.darkMode 
+                                        ? 'text-Primary_200' : 'text-PrimaryActive'
+                                    : 'text-Primary'
+                                    } flex gap-3 items-center overflow-x-scroll custom_container w-[90%]`}
+                                >
                                     {userType !== '' ? userType : 'Select Role'}
                                 </div>
                                 <img
@@ -257,13 +271,22 @@ const Register = (props: any) => {
                                 />
                             </div>
                             {selectRoleDropdown &&
-                                <div className={`min-w-[150px] w-3/4 max-h-[250px] overflow-scroll flex flex-col gap-0 absolute z-10 top-20 right-0 p-1 bg-white rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] h-fit animate-slide_down2`}>
+                                <DropdownCard
+                                    handleClickOut={setSelectRoleDropdown}
+                                    cardLayout={`${props.darkMode ? 'bg-Primary_800' : 'bg-white'} min-w-[150px] max-w-3/5 w-fit max-h-[200px] overflow-scroll flex flex-col gap-0 absolute z-10 right-0 top-20 rounded-md custom_container shadow-[0_8px_30px_rgb(0,0,0,0.12)] h-fit animate-slide_down2`}
+                                >
                                     {userRoleType?.map((item, i) => (
-                                        <span key={i} onClick={() => setUserType(item.label)} className='cursor-pointer font-normal text-sm leading-6 text-Black2 rounded-md p-2 hover:bg-BackDrop_d_xs'>
+                                        <span key={i}
+                                            onClick={() => {
+                                                setUserType(item.label);
+                                                setSelectRoleDropdown(false);
+                                            }}
+                                            className={`${props.darkMode ? 'text-slate-500 hover:text-white' : 'text-Primary hover:text-PrimaryActive'} hover:bg-Primary_Accents_xs cursor-pointer font-normal text-sm leading-6 p-2`}
+                                        >
                                             {item.label}
                                         </span>
                                     ))}
-                                </div>
+                                </DropdownCard>
                             }
                         </div>
                     </div>
@@ -272,7 +295,7 @@ const Register = (props: any) => {
                         <FormInput
                             type='text'
                             placeholder="example@gmail.com"
-                            style='w-3/5'
+                            style='w-3/5 mobile:w-full'
                             inputStyle="border border-transparent text-Black2"
                             label="Email Address"
                             labelStyle="font-normal text-sm leading-6 text-Black2"
@@ -280,7 +303,7 @@ const Register = (props: any) => {
                             onChange={(e) => setEmail(e.target.value)}
                         />
 
-                        <div className={`w-2/5 relative z-[15] cursor-pointer`}>
+                        <div className={`w-2/5 mobile:w-full relative z-[15] cursor-pointer`}>
                             <FormInput
                                 type="text"
                                 placeholder='Select Country'
@@ -334,7 +357,7 @@ const Register = (props: any) => {
                             type={showPassword ? 'text' : 'password'}
                             name='password'
                             placeholder="xxxxxx"
-                            style='w-1/2'
+                            style='w-1/2 mobile:w-full'
                             inputStyle="border border-transparent text-Black2 w-full"
                             label="Password"
                             labelStyle="font-normal text-sm leading-6 text-Black2"
@@ -350,7 +373,7 @@ const Register = (props: any) => {
                             type={showConfirmPassword ? 'text' : 'password'}
                             name='confirm_password'
                             placeholder="xxxxxx"
-                            style='w-1/2'
+                            style='w-1/2 mobile:w-full'
                             inputStyle="border border-transparent text-Black2 w-full"
                             label="Confirm Password"
                             labelStyle="font-normal text-sm leading-6 text-Black2"
@@ -391,7 +414,7 @@ const Register = (props: any) => {
                 </div>
             </form>
             {userProfileImg.length > 0 &&
-                <span className="w-[150px] h-[150px] rounded-lg border-2 border-PrimaryActive overflow-hidden absolute -right-40 top-0">
+                <span className="w-[150px] h-[150px] mobile:w-[75px] mobile:h-[75px] rounded-lg mobile:rounded-full border-2 border-PrimaryActive overflow-hidden absolute -right-40 top-0 mobile:-top-20 mobile:right-0 mobile:left-0 mobile:mx-auto">
                     {userProfileImg.map((item, i) => (
                         <img key={i} src={item.preview} alt='previewImg' className="w-full h-full object-cover object-center object-fit" />
                     ))}
@@ -401,51 +424,8 @@ const Register = (props: any) => {
     )
 }
 
-export default Register;
+const mapStateToProps = (state: any) => ({
+    darkMode: state.app.darkMode
+})
 
-
-
-
-
-
-
-
-
-
-
-
-{/* <FormInput
-        type='text'
-        name='street'
-        placeholder="example@gmail.com"
-        style='w-3/5 flex'
-        inputStyle="border border-transparent text-Black2 w-full"
-        label="Home Address"
-        labelStyle="font-normal text-sm leading-6 text-Black2"
-        value={street}
-        onChange={(e) => setStreet(e.target.value)}
-    />
-
-    <FormInput
-        type='text'
-        name='city'
-        placeholder="example@gmail.com"
-        style='w-3/5 hidden'
-        inputStyle="border border-transparent text-Black2 w-full"
-        label="Home Address"
-        labelStyle="font-normal text-sm leading-6 text-Black2"
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-    />
-
-    <FormInput
-        type='text'
-        name='state'
-        placeholder="example@gmail.com"
-        style='w-3/5 hidden'
-        inputStyle="border border-transparent text-Black2 w-full"
-        label="Home Address"
-        labelStyle="font-normal text-sm leading-6 text-Black2"
-        value={state}
-        onChange={(e) => setState(e.target.value)}
-    /> */}
+export default connect(mapStateToProps, null)(Register);
