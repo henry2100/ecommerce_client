@@ -33,7 +33,7 @@ import { setUserLogStatus } from '../../../redux/auth/auth.action';
 import { toggleDarkMode, toggleSearchBar } from '../../../redux/app/app.action';
 import { handleLogout } from 'utils';
 import SearchBox from 'components/molecules/SearchBox';
-import CartModal from 'pages/dashboard/ModalComponents/CartModal';
+import CartDropdown from 'pages/dashboard/ModalComponents/CartDropdown';
 import DropdownCard from 'components/atoms/DropdownCard';
 import Toggle from 'components/atoms/Toggle';
 import Alert from 'components/atoms/Alert';
@@ -131,7 +131,7 @@ const TopNav: React.FC<Props> = (props) => {
 
         setTimeout(() => {
             setCartNotifyer(false);
-            Alert('success', 'Added Successfully', props.darkMode);
+            if (props.shopping_cart.length > 0) Alert('success', 'Added Successfully', props.darkMode);
         }, 1000);
     }, [props.shopping_cart]);
 
@@ -164,16 +164,18 @@ const TopNav: React.FC<Props> = (props) => {
 
                 <img src={props.darkMode ? moonIcon : sunIcon} alt='weather_icon' className={`${props.showSearch ? 'mobile:hidden block' : 'block'} w-5 h-5 cursor-pointer`} onClick={props.toggleDarkMode} />
 
-                <div className={`${props.showSearch ? 'mobile:hidden flex' : 'flex'} group items-center gap-2 group transition ease-in-out duration-250 cursor-pointer ml-8 mobile:ml-0 mr-0 ${props.darkMode ? 'bg-Primary_600 hover:bg-Primary_700' : 'bg-slate-100 hover:bg-Primary_300'} py-1 px-5 rounded-md`}
-                    onClick={() => setShowCartModal(prevState => !prevState)}
-                >
-                    <span className={`${cartNotifyer ? 'w-[24px] h-[24px] text-Accent_blue font-bold text-base mobile:text-sm' : 'w-5 h-5 text-Primary font-semibold text-sm mobile:text-xs'} rounded-full !bg-NoColor group-hover:text-white flex justify-center items-center`}>
-                        {props.shopping_cart.length}
-                    </span>
-                    <span>
-                        <img src={cartIcon_linear} alt='cart-icon' className='block group-hover:hidden w-6 h-6 transition ease-in-out duration-250' />
-                        <img src={cartIcon_solid} alt='cart-icon' className='hidden group-hover:block w-6 h-6 transition ease-in-out duration-250' />
-                    </span>
+                <div className='desktop:relative  ml-8 mobile:ml-0 mr-0' onClick={() => setShowCartModal(prevState => !prevState)}>
+                    <div className={`${props.showSearch ? 'mobile:hidden flex' : 'flex'} group items-center gap-2 group transition ease-in-out duration-250 cursor-pointer ${props.darkMode ? 'bg-Primary_600 hover:bg-Primary_700' : 'bg-slate-100 hover:bg-Primary_300'} py-1 px-5 rounded-md`} >
+                        <span className={`${cartNotifyer ? 'w-[24px] h-[24px] text-Accent_blue font-bold text-base mobile:text-sm' : 'w-5 h-5 text-Primary font-semibold text-sm mobile:text-xs'} rounded-full !bg-NoColor flex justify-center items-center`}>
+                            {props.shopping_cart.length}
+                        </span>
+                        <span className='flex-shrink-0'>
+                            <img src={cartIcon_linear} alt='cart-icon' className='block group-hover:hidden w-6 h-6 transition ease-in-out duration-250' />
+                            <img src={cartIcon_solid} alt='cart-icon' className='hidden group-hover:block w-6 h-6 transition ease-in-out duration-250' />
+                        </span>
+
+                        {showCartModal && <CartDropdown setShowCartModal={setShowCartModal} />}
+                    </div>
                 </div>
 
                 <nav className='flex justify-center items-center gap-5 flex-shrink-0 tablet:hidden'>
@@ -229,7 +231,6 @@ const TopNav: React.FC<Props> = (props) => {
                     }
                 </div>
                 {showModal && <MobileNav setShowModal={setShowModal} />}
-                {showCartModal && <CartModal setShowCartModal={setShowCartModal} />}
             </span>
         </div>
     );

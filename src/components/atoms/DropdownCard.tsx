@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 
 interface Props {
     children: React.ReactNode;
-    handleClickOut: (e?: any) => void,
+    handleClickOut?: (e?: any) => void,
     cardLayout?: string
 }
 
@@ -17,7 +17,7 @@ const DropdownCard: React.FC<Props> = ({
 
     const handleClickOutside = (e: MouseEvent) => {
         if(dropdownRef.current && !dropdownRef.current.contains(e.target as Node)){
-            handleClickOut(false);
+            handleClickOut && handleClickOut(false);
             
         }
     }

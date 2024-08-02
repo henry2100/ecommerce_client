@@ -22,11 +22,11 @@ type TableProps = {
   getCurrentPage: (pageNum: number) => void;
 };
 
-const AppTable: React.FC<TableProps> = ({ columns, data, itemsPerPage, loading, darkMode, loaderHeight, errorState, addedStyle, dataLength, getCurrentPage}) => {
+const AppTable: React.FC<TableProps> = ({ columns, data, itemsPerPage, loading, darkMode, loaderHeight, errorState, addedStyle, dataLength, getCurrentPage }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const pagesValue = dataLength / itemsPerPage
-  const totalPages = dataLength ? Math.ceil( pagesValue ) : Math.ceil(data.length / itemsPerPage);
+  const totalPages = dataLength ? Math.ceil(pagesValue) : Math.ceil(data.length / itemsPerPage);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -41,20 +41,21 @@ const AppTable: React.FC<TableProps> = ({ columns, data, itemsPerPage, loading, 
     <div className={`relative flex flex-col ${data.length < 10 ? 'min-h-[15vh]' : 'min-h-[60vh]'}`}>
       <div className={`${darkMode ? 'bg-Primary_800' : 'bg-Primary_Accents_xs'} overflow-x-auto rounded-lg mb-10`}>
         <table className={`min-w-full mobile:min-h-full ${loading && !loaderHeight && 'min-h-[587px]'} ${loading && loaderHeight && 'min-h-[406px]'} ${errorState && 'min-h-[300px]'} divide-y ${darkMode ? 'divide-PrimaryActive' : 'divide-gray-200'}`}>
-          <TableHeader columns={columns}/>
-          { loading ?
+          <TableHeader columns={columns} />
+          {loading ?
             <div className={`absolute z-10 flex items-center py-10 justify-center w-full h-[80%] ${addedStyle}`}>
               <Spinner
-                text="Loading..."
+                text='Loading...'
+                textStyle='font-bold text-lg mobile:text-sm text-white'
               />
-            </div> 
-          
-          :!errorState && data.length > 0 ? 
-            <TableBody columns={columns} data={currentData} darkMode={darkMode}/>
-          
-          : <tbody>
-              <ErrorEmptyState img={true}/>
-            </tbody>
+            </div>
+
+            : !errorState && data.length > 0 ?
+              <TableBody columns={columns} data={currentData} darkMode={darkMode} />
+
+              : <tbody>
+                <ErrorEmptyState img={true} />
+              </tbody>
           }
         </table>
       </div>

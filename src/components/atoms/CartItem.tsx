@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Button from './Button';
 import addIcon from '../../assets/svg/math/math_add.svg';
 import minusIcon from '../../assets/svg/math/math_minus.svg';
+import removeIcon from '../../assets/svg/trash.svg';
 import Alert from './Alert';
 import { addToQuantity, removeFromCart, removeFromQuantity } from '../../redux/app/app.action';
 import { connect } from 'react-redux';
@@ -27,75 +28,16 @@ const CartItem = (props: any) => {
                     <p className={`${props.darkMode ? 'group-hover:text-white' : 'text-PrimaryActive'} transition ease-in-out duration-250 block mobile:hidden font-semibold text-sm leading-5`}>{props?.name?.length > 25 ? props?.name?.slice(0, 25) + '...' : props?.name}</p>
                     <p className={`${props.darkMode ? 'group-hover:text-white' : 'text-PrimaryActive'} transition ease-in-out duration-250 hidden mobile:block font-semibold text-sm leading-5`}>{props?.name?.length > 12 ? props?.name?.slice(0, 12) + '...' : props?.name}</p>
                     <p className={`${props.darkMode ? 'group-hover:text-white' : 'text-PrimaryActive'} transition ease-in-out duration-250 font-semibold text-xs leading-5`}>{props?.category}</p>
-                    {/* <span className='flex w-[98%] overflow-x-scroll custom_container justify-start items-center gap-1'>
-                        {props?.tags.map((tag, i) => (
-                            <p key={i} className='font-normal text-xs leading-5 text-Primary'>{tag}</p>
-                        ))}
-                    </span> */}
                 </span>
 
                 <div className='flex flex-col justify-end items-end gap-2'>
-                    {/* <span className='w-fit flex gap-3 mobile:gap-2'>
-                        <Button
-                            btnType='button'
-                            btnStyle='w-5 h-5 rounded-[3px] bg-Primary flex justify-center items-center cursor-pointer'
-                            btnImg={minusIcon}
-                            btnImgStyle='w-[10px] h-[10px]'
-                            onClick={() => {
-                                setCounter(counter - 1);
-                            }}
-                        />
-                        <span className='w-5 h-5 rounded-[3px] bg-[#f8fafc] flex justify-center items-center font-normal text-base mobile:text-sm text-Primary'>
-                            {counter}
-                        </span>
-                        <Button
-                            btnType='button'
-                            btnStyle='w-5 h-5 rounded-[3px] bg-Primary flex justify-center items-center cursor-pointer'
-                            btnImg={addIcon}
-                            btnImgStyle='w-[10px] h-[10px]'
-                            onClick={() => {
-                                if (counter === props?.quantity_in_stock) {
-                                    Alert('warning', 'Maximum quantity reached', props?.darkMode);
-                                } else {
-                                    setCounter(counter + 1);
-                                }
-                            }}
-                        />
-                    </span> */}
-                    <div className='w-fit flex gap-3 mobile:gap-2'>
-                        <Button
-                            btnType='button'
-                            btnStyle={`${props.darkMode ? 'bg-Primary_700' : 'bg-Primary_300'} transition ease-in-out duration-250 w-8 h-8 mobile:w-5 mobile:h-5 rounded-md flex justify-center items-center cursor-pointer`}
-                            btnImg={minusIcon}
-                            btnImgStyle='w-3 h-3'
-                            onClick={() => {
-                                if (props.quantity <= 1) {
-                                    props.removeFromCart(props.id);
-                                } else {
-                                    props.removeFromQuantity(props.id);
-                                }
-                            }}
-                        />
-                        <span className={`${props.darkMode ? 'bg-NoColor hover:bg-Primary_Accents_sm' : 'bg-[#f8fafc]'} transition ease-in-out duration-250 w-8 h-8 mobile:w-5 mobile:h-5 rounded-md flex justify-center items-center font-semibold text-xl mobile:text-lg text-Primary`}>
-                            {props.quantity}
-                        </span>
-                        <Button
-                            btnType='button'
-                            btnStyle={`${props.darkMode ? 'bg-Primary_700' : 'bg-Primary_300'} hover:Primary_Accents_xs transition ease-in-out duration-250 w-8 h-8 mobile:w-5 mobile:h-5 rounded-md flex justify-center items-center cursor-pointer`}
-                            btnImg={addIcon}
-                            btnImgStyle='w-3 h-3'
-                            onClick={() => {
-                                if (props.quantity === props?.quantity_in_stock) {
-                                    Alert('warning', 'Maximum quantity reached');
-                                    return;
-                                } else {
-                                    props.addToQuantity(props.id);
-                                }
-                            }}
-                        />
-                    </div>
+                    
                     <span className='font-normal text-right text-base mobile:text-sm text-Primary'>
                         {props.currency + " " + (Intl.NumberFormat().format(props.price))}
+                    </span>
+
+                    <span className='w-fit flex' onClick={()=>props.removeFromCart(props?.id)}>
+                        <img src={removeIcon} alt='remove_icon' className='w-4 h-4'/>
                     </span>
                 </div>
             </div>
