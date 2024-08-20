@@ -103,7 +103,7 @@ const MobileNav = (props) => {
                         <Toggle
                             handleClick={props.toggleDarkMode}
                             checked={props.darkMode}
-                            style="w-[26px] h-[14px] after:h-3 after:w-3 after:top-0 after:bottom-0 after:left-[1px] after:my-auto peer-checked:bg-black after:bg-GrayCustom6"
+                            style={`w-[26px] h-[14px] after:h-3 after:w-3 after:top-0 after:bottom-0 after:left-[1px] after:my-auto !bg-Primary peer-checked:!bg-Primary_800 after:bg-GrayCustom6`}
                             notifyMssg={props.darkMode ? 'Enabled' : 'Disabled'}
                             notifyMssgStyle={props.darkMode ? 'text-Success' : 'text-Danger'}
                             disapperMssg={false}

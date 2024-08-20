@@ -20,7 +20,7 @@ type Props = {
 const CartDropdown = (props: Props) => {
     const navigate = useNavigate();
 
-    // console.log("Cart:", props?.shopping_cart);
+    console.log("Cart:", props?.shopping_cart);
 
     return (
         <DropdownCard handleClickOut={props.setShowCartModal} cardLayout={`${props.darkMode ? 'bg-Primary_800' : 'bg-Primary_200'} overflow-hidden absolute top-16 mobile:top-24 left-0 mobile:right-0 mobile:mx-auto rounded-md w-[350px] mobile:w-4/5 h-fit shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] animate-slide_down2 transition ease-in-out duration-500 custom_container`}>

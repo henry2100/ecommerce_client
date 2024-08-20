@@ -24,20 +24,53 @@ const CartItem = (props: any) => {
                 <img src={props?.productImg} alt='' className='w-full h-full object-cover object-center' />
             </span>
             <div className='flex justify-between gap-4 w-full'>
-                <span className={`rounded-md flex flex-col`}>
+                <div className={`rounded-md flex flex-col`}>
                     <p className={`${props.darkMode ? 'group-hover:text-white' : 'text-PrimaryActive'} transition ease-in-out duration-250 block mobile:hidden font-semibold text-sm leading-5`}>{props?.name?.length > 25 ? props?.name?.slice(0, 25) + '...' : props?.name}</p>
                     <p className={`${props.darkMode ? 'group-hover:text-white' : 'text-PrimaryActive'} transition ease-in-out duration-250 hidden mobile:block font-semibold text-sm leading-5`}>{props?.name?.length > 12 ? props?.name?.slice(0, 12) + '...' : props?.name}</p>
                     <p className={`${props.darkMode ? 'group-hover:text-white' : 'text-PrimaryActive'} transition ease-in-out duration-250 font-semibold text-xs leading-5`}>{props?.category}</p>
-                </span>
+
+                    <div className='w-fit flex gap-3 mobile:gap-2'>
+                        <Button
+                            btnType='button'
+                            btnStyle={`${props.darkMode ? 'bg-Primary_800' : 'bg-Primary_300'} transition ease-in-out duration-250 w-6 h-6 mobile:w-4 mobile:h-4 rounded-md flex justify-center items-center cursor-pointer`}
+                            btnImg={minusIcon}
+                            btnImgStyle='w-3 h-3'
+                            onClick={() => {
+                                if (props.quantity <= 1) {
+                                    props.removeFromCart(props.id);
+                                } else {
+                                    props.removeFromQuantity(props.id);
+                                }
+                            }}
+                        />
+                        <span className={`${props.darkMode ? 'bg-NoColor hover:bg-Primary_Accents_sm' : 'bg-[#f8fafc]'} transition ease-in-out duration-250 w-6 h-6 mobile:w-4 mobile:h-4 rounded-md flex justify-center items-center font-semibold text-xl mobile:text-lg text-Primary`}>
+                            {props.quantity}
+                        </span>
+                        <Button
+                            btnType='button'
+                            btnStyle={`${props.darkMode ? 'bg-Primary_800' : 'bg-Primary_300'} hover:Primary_Accents_xs transition ease-in-out duration-250 w-6 h-6 mobile:w-4 mobile:h-4 rounded-md flex justify-center items-center cursor-pointer`}
+                            btnImg={addIcon}
+                            btnImgStyle='w-3 h-3'
+                            onClick={() => {
+                                if (props.quantity === props?.quantity_in_stock) {
+                                    Alert('warning', 'Maximum quantity reached');
+                                    return;
+                                } else {
+                                    props.addToQuantity(props.id);
+                                }
+                            }}
+                        />
+                    </div>
+                </div>
 
                 <div className='flex flex-col justify-end items-end gap-2'>
-                    
+
                     <span className='font-normal text-right text-base mobile:text-sm text-Primary'>
                         {props.currency + " " + (Intl.NumberFormat().format(props.price))}
                     </span>
 
-                    <span className='w-fit flex' onClick={()=>props.removeFromCart(props?.id)}>
-                        <img src={removeIcon} alt='remove_icon' className='w-4 h-4'/>
+                    <span className='w-fit flex' onClick={() => props.removeFromCart(props?.id)}>
+                        <img src={removeIcon} alt='remove_icon' className='w-4 h-4' />
                     </span>
                 </div>
             </div>

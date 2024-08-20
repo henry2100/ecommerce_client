@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import NavItem from './NavItem';
 import { ToSnakeCase } from 'components/atoms/CaseManager';
 
@@ -56,6 +56,7 @@ const TopNav: React.FC<Props> = (props) => {
     const [showCartModal, setShowCartModal] = useState(false);
     const [cartNotifyer, setCartNotifyer] = useState(false);
     const [selected, setSelected] = useState('');
+    const prevCartRef = useRef<any[]>([]);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -157,21 +158,28 @@ const TopNav: React.FC<Props> = (props) => {
     }, [showCartModal, showModal, dropdown]);
 
     useEffect(() => {
+        // Use a ref to keep track of the previous state of shopping_cart
         setCartNotifyer(true);
-
-        setTimeout(() => {
-            setCartNotifyer(false);
-            if (props.shopping_cart.length > 0) Alert('success', 'Added Successfully', props.darkMode);
-        }, 1000);
+        const prevCart = prevCartRef.current;
+            const currentCart = props.shopping_cart;
+            
+            if (prevCart.length < currentCart.length) {
+                // An item was added
+                Alert('success', 'Added Successfully', props.darkMode);
+            } else if (prevCart.length > currentCart.length) {
+                // An item was removed
+                Alert('success', 'Removed Successfully', props.darkMode);
+            }
+    
+            // Update the previous cart reference to the current cart for the next render
+            prevCartRef.current = currentCart;
+            setTimeout(() => setCartNotifyer(false), 1000);
     }, [props.shopping_cart]);
-
-    console.log('shopping_cart:', props.shopping_cart);
-
 
     return (
         <div className={`relative z-[25] flex justify-between items-center gap-5 ${props.showSearch ? 'px-5 py-4' : 'p-5'}`}>
-            <div className='desktop:w-1/10 desktop:mx-20 nav_title_text cursor-pointer flex items-center gap-3' onClick={() => navigate(`/dashboard/${userStatus ? 'shop' : 'home'}`)}>
-                <span className='flex-shrink-0 flex-grow-0 w-10 h-10 mobile:w-7 mobile:h-7'>
+            <div className='desktop:w-1/10 desktop:mx-20 nav_title_text cursor-pointer flex items-center gap-3'>
+                <span className='flex-shrink-0 flex-grow-0 w-10 h-10 mobile:w-7 mobile:h-7' onClick={() => navigate(`${props.loggedIn ? '/dashboard/profile' : '/auth/login'}`)}>
                     <img src={userStatus
                         ? userProfileImg
                             ? userProfileImg
@@ -179,7 +187,7 @@ const TopNav: React.FC<Props> = (props) => {
                         : user_placeholder}
                         alt='user_profile' className='w-full h-full object-cover object-center object-fit rounded-full' />
                 </span>
-                <p className='nav_title_text text-Primary !font-bold text-lg mobile:text-base'>Empire</p>
+                <p className='nav_title_text text-Primary !font-bold text-lg mobile:text-base' onClick={() => navigate('/dashboard/home')}>Empire</p>
             </div>
 
             <span className='desktop:max-w-3/4 desktop:w-full w-fit desktop:mx-20 flex justify-end items-center gap-5'>
