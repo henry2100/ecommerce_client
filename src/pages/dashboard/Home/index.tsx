@@ -33,7 +33,7 @@ const Home = (props: any) => {
         if (res?.status === 200) {
             setLoading(false);
             setProducts(res?.data.data);
-            Alert('success', res?.data.message, props.darkMode);
+            // Alert('success', res?.data.message, props.darkMode);
         } else {
             setLoading(false);
         }
@@ -114,6 +114,7 @@ const Home = (props: any) => {
                 currentPage={currentPage}
                 totalPages={totalPages}
                 totalData={filteredData.length}
+                itemsPerPage={recordsPerPage}
                 onPageChange={handlePageChange}
             />}
         </div>

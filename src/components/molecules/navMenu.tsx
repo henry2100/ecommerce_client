@@ -29,7 +29,7 @@ const navMenu = (userStatus, handleLogout) => {
         { navType:'dash', navFunc: null, navItem: 'Profile', style: `${userStatus ? 'flex' : 'hidden'}`, icon1: userIconSolid, icon2: userIcon, available: true },
         { navType:'dash', navFunc: null, navItem: 'Home', style: `hidden ${userStatus ? 'hidden' : 'tablet:flex'}`, icon1: homeIconSolid, icon2: homeIcon, available: true },
         { navType:'dash', navFunc: null, navItem: 'Shop', style: `hidden ${userStatus ? 'tablet:flex' : 'hidden'}`, icon1: shopIconSolid, icon2: shopIcon, available: true },
-        { navType:'dash', navFunc: null, navItem: 'Contact Us', style: `hidden tablet:flex`, icon1: callIconSolid, icon2: callIcon, available: true },
+        // { navType:'dash', navFunc: null, navItem: 'Contact Us', style: `hidden tablet:flex`, icon1: callIconSolid, icon2: callIcon, available: true },
 
         { navType:'auth', navFunc: null, navItem: 'Create Account', style: `${userStatus ? 'hidden' : 'flex'}`, icon1: newUserIconSolid, icon2: newUserIcon, available: true },
         { navType:'auth', navFunc: null, navItem: 'Login', style: `${userStatus ? 'hidden' : 'flex'}`, icon1: loginIconSolid, icon2: loginIcon, available: true },

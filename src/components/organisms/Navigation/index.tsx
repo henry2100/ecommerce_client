@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import NavItem from './NavItem';
 import { ToSnakeCase } from 'components/atoms/CaseManager';
 
@@ -30,13 +30,14 @@ import useWindowSize from '../../atoms/WindowWidth';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { setUserLogStatus } from '../../../redux/auth/auth.action';
-import { toggleDarkMode, toggleSearchBar } from '../../../redux/app/app.action';
+import { toggleDarkMode, toggleSearchBar, updateCartFromDb } from '../../../redux/app/app.action';
 import { handleLogout } from 'utils';
 import SearchBox from 'components/molecules/SearchBox';
-import CartModal from 'pages/dashboard/ModalComponents/CartModal';
+import CartDropdown from 'pages/dashboard/ModalComponents/CartDropdown';
 import DropdownCard from 'components/atoms/DropdownCard';
 import Toggle from 'components/atoms/Toggle';
 import Alert from 'components/atoms/Alert';
+import { BASE_URL, putRequest } from 'services/http';
 
 interface Props {
     darkMode: boolean;
@@ -46,6 +47,7 @@ interface Props {
     shopping_cart: any[];
     toggleSearchBar: () => void;
     toggleDarkMode: () => void;
+    updateCartFromDb: (e: any) => void;
 }
 
 const TopNav: React.FC<Props> = (props) => {
@@ -54,22 +56,51 @@ const TopNav: React.FC<Props> = (props) => {
     const [showCartModal, setShowCartModal] = useState(false);
     const [cartNotifyer, setCartNotifyer] = useState(false);
     const [selected, setSelected] = useState('');
+    const prevCartRef = useRef<any[]>([]);
 
     const navigate = useNavigate();
     const location = useLocation();
 
     const currentPath = location.pathname.split('/')[2];
 
+    const headers = {
+        "Content-Type": "application/json"
+    }
+
     const userStatus = props.loggedIn;
     const userProfileImg = props.authData?.data?.imageUrl;
 
-    const { navMenuItems } = navMenu(userStatus, handleLogout);
+    console.log("Cart:", props.shopping_cart);
+
+
+    const updateCart = async (cartId: string, token: string, reqData: any) => {
+        const res = await putRequest(`${BASE_URL}cart/update/${cartId}/logout`, {
+            ...headers,
+            'Authorization': `Bearer ${token}`
+        }, reqData);
+
+        if (res?.status === 200) {
+            props.updateCartFromDb([...res?.data.data.products]);
+        } else {
+            Alert('error', res?.data.message);
+        }
+    }
+
+    const logoutSequence = () => {
+        updateCart(props?.authData?.data.cartId, props?.authData?.token.accessToken, {
+            userId: props?.authData?.data._id,
+            products: props?.shopping_cart
+        })
+        handleLogout();
+    }
+
+    const { navMenuItems } = navMenu(userStatus, logoutSequence);
     const { windowWidth } = useWindowSize();
 
     const navData = [
         { navItem: 'Home', action: null, style: `${userStatus ? 'hidden' : 'flex'}`, icon1: homeIconSolid, icon2: homeIcon, available: true },
         { navItem: 'Shop', action: null, style: `${userStatus ? 'flex' : 'hidden'}`, icon1: shopIconSolid, icon2: shopIcon, available: true },
-        { navItem: 'Contact Us', action: null, style: 'flex', icon1: contactIconSolid, icon2: contactIcon, available: true },
+        // { navItem: 'Contact Us', action: null, style: 'flex', icon1: contactIconSolid, icon2: contactIcon, available: true },
         { navItem: 'Search', action: () => props.toggleSearchBar(), style: 'flex', icon1: searchIconSolid, icon2: searchIcon, available: true },
     ];
 
@@ -127,18 +158,28 @@ const TopNav: React.FC<Props> = (props) => {
     }, [showCartModal, showModal, dropdown]);
 
     useEffect(() => {
+        // Use a ref to keep track of the previous state of shopping_cart
         setCartNotifyer(true);
-
-        setTimeout(() => {
-            setCartNotifyer(false);
-            Alert('success', 'Added Successfully', props.darkMode);
-        }, 1000);
+        const prevCart = prevCartRef.current;
+            const currentCart = props.shopping_cart;
+            
+            if (prevCart.length < currentCart.length) {
+                // An item was added
+                Alert('success', 'Added Successfully', props.darkMode);
+            } else if (prevCart.length > currentCart.length) {
+                // An item was removed
+                Alert('success', 'Removed Successfully', props.darkMode);
+            }
+    
+            // Update the previous cart reference to the current cart for the next render
+            prevCartRef.current = currentCart;
+            setTimeout(() => setCartNotifyer(false), 1000);
     }, [props.shopping_cart]);
 
     return (
         <div className={`relative z-[25] flex justify-between items-center gap-5 ${props.showSearch ? 'px-5 py-4' : 'p-5'}`}>
-            <div className='desktop:w-1/10 desktop:mx-20 nav_title_text cursor-pointer flex items-center gap-3' onClick={() => navigate(`/dashboard/${userStatus ? 'shop' : 'home'}`)}>
-                <span className='flex-shrink-0 flex-grow-0 w-10 h-10'>
+            <div className='desktop:w-1/10 desktop:mx-20 nav_title_text cursor-pointer flex items-center gap-3'>
+                <span className='flex-shrink-0 flex-grow-0 w-10 h-10 mobile:w-7 mobile:h-7' onClick={() => navigate(`${props.loggedIn ? '/dashboard/profile' : '/auth/login'}`)}>
                     <img src={userStatus
                         ? userProfileImg
                             ? userProfileImg
@@ -146,7 +187,7 @@ const TopNav: React.FC<Props> = (props) => {
                         : user_placeholder}
                         alt='user_profile' className='w-full h-full object-cover object-center object-fit rounded-full' />
                 </span>
-                <p className='nav_title_text text-Primary !font-bold !text-lg'>Empire</p>
+                <p className='nav_title_text text-Primary !font-bold text-lg mobile:text-base' onClick={() => navigate('/dashboard/home')}>Empire</p>
             </div>
 
             <span className='desktop:max-w-3/4 desktop:w-full w-fit desktop:mx-20 flex justify-end items-center gap-5'>
@@ -162,18 +203,20 @@ const TopNav: React.FC<Props> = (props) => {
                     </span>
                 )}
 
-                <img src={props.darkMode ? moonIcon : sunIcon} alt='weather_icon' className={`${props.showSearch ? 'mobile:hidden block' : 'block'} w-5 h-5 cursor-pointer`} onClick={props.toggleDarkMode} />
+                <img src={props.darkMode ? moonIcon : sunIcon} alt='weather_icon' className={`${props.showSearch ? 'mobile:hidden block' : 'block'} mobile:hidden w-5 h-5 cursor-pointer`} onClick={props.toggleDarkMode} />
 
-                <div className={`${props.showSearch ? 'mobile:hidden flex' : 'flex'} group items-center gap-2 group transition ease-in-out duration-250 cursor-pointer ml-8 mobile:ml-0 mr-0 ${props.darkMode ? 'bg-Primary_600 hover:bg-Primary_700' : 'bg-slate-100 hover:bg-Primary_300'} py-1 px-5 rounded-md`}
-                    onClick={() => setShowCartModal(prevState => !prevState)}
-                >
-                    <span className={`${cartNotifyer ? 'w-[24px] h-[24px] text-Accent_blue font-bold text-base mobile:text-sm' : 'w-5 h-5 text-Primary font-semibold text-sm mobile:text-xs'} rounded-full !bg-NoColor group-hover:text-white flex justify-center items-center`}>
-                        {props.shopping_cart.length}
-                    </span>
-                    <span>
-                        <img src={cartIcon_linear} alt='cart-icon' className='block group-hover:hidden w-6 h-6 transition ease-in-out duration-250' />
-                        <img src={cartIcon_solid} alt='cart-icon' className='hidden group-hover:block w-6 h-6 transition ease-in-out duration-250' />
-                    </span>
+                <div className='desktop:relative ml-8 mobile:hidden mr-0' onClick={() => setShowCartModal(true)}>
+                    <div className={`${props.showSearch ? 'mobile:hidden flex' : 'flex'} group items-center gap-2 group transition ease-in-out duration-250 cursor-pointer ${props.darkMode ? 'bg-Primary_600 hover:bg-Primary_700' : 'bg-slate-100 hover:bg-Primary_300'} py-1 px-5 rounded-md`} >
+                        <span className={`${cartNotifyer ? 'w-[24px] h-[24px] text-Accent_blue font-bold text-base mobile:text-sm' : 'w-5 h-5 text-Primary font-semibold text-sm mobile:text-xs'} rounded-full !bg-NoColor flex justify-center items-center`}>
+                            {props.shopping_cart.length}
+                        </span>
+                        <span className='flex-shrink-0'>
+                            <img src={cartIcon_linear} alt='cart-icon' className='block group-hover:hidden w-6 h-6 transition ease-in-out duration-250' />
+                            <img src={cartIcon_solid} alt='cart-icon' className='hidden group-hover:block w-6 h-6 transition ease-in-out duration-250' />
+                        </span>
+
+                        {showCartModal && <CartDropdown setShowCartModal={setShowCartModal} />}
+                    </div>
                 </div>
 
                 <nav className='flex justify-center items-center gap-5 flex-shrink-0 tablet:hidden'>
@@ -195,7 +238,7 @@ const TopNav: React.FC<Props> = (props) => {
                 </nav>
                 <div className='w-fit relative'>
                     <div
-                        className={`${props.darkMode ? `${showModal || dropdown && '!bg-PrimaryActive'} bg-Primary_600 text-Primary hover:bg-Primary_Accents_sm` : `${showModal || dropdown && '!bg-slate-300'} bg-slate-100 text-slate-500 hover:bg-slate-300`} px-5 py-1 flex justify-center items-center flex-shrink-0 gap-3 rounded-md cursor-pointer transition ease-in-out duration-250 relative z-10`}
+                        className={`${props.darkMode ? `${showModal || dropdown && '!bg-PrimaryActive'} bg-Primary_600 text-Primary hover:bg-Primary_Accents_sm` : `${showModal || dropdown && '!bg-slate-300'} bg-slate-100 text-slate-500 hover:bg-slate-300`} px-5 py-1 mobile:p-0 mobile:bg-NoColor flex justify-center items-center flex-shrink-0 gap-3 rounded-md cursor-pointer transition ease-in-out duration-250 relative z-10`}
                         onClick={() => {
                             if (windowWidth > 1199) {
                                 setDropdown(true);
@@ -204,9 +247,9 @@ const TopNav: React.FC<Props> = (props) => {
                             }
                         }}
                     >
-                        <img src={showModal || dropdown ? arrow_up_d : arrow_down_d} alt='more_icon' className='block tablet:hidden w-4 h-4 cursor-pointer' />
-                        <img src={navMenuIcon} alt='more_icon' className='hidden tablet:block w-4 h-4 cursor-pointer' />
-                        <p>More</p>
+                        <img src={showModal || dropdown ? arrow_up_d : arrow_down_d} alt='more_icon' className='block tablet:hidden w-4 h-4 mobile:w-6 mobile:h-6 cursor-pointer' />
+                        <img src={navMenuIcon} alt='more_icon' className='hidden tablet:block w-4 h-4 mobile:w-6 mobile:h-6 cursor-pointer' />
+                        <p className='block mobile:hidden'>More</p>
                     </div>
 
                     {dropdown &&
@@ -229,7 +272,6 @@ const TopNav: React.FC<Props> = (props) => {
                     }
                 </div>
                 {showModal && <MobileNav setShowModal={setShowModal} />}
-                {showCartModal && <CartModal setShowCartModal={setShowCartModal} />}
             </span>
         </div>
     );
@@ -246,7 +288,8 @@ const mapStateToProps = (state: any) => ({
 const mapDispatchToProps = (dispatch: any) => ({
     toggleSearchBar: () => dispatch(toggleSearchBar()),
     setUserLogStatus: (data) => dispatch(setUserLogStatus(data)),
-    toggleDarkMode: () => dispatch(toggleDarkMode())
+    toggleDarkMode: () => dispatch(toggleDarkMode()),
+    updateCartFromDb: (data) => dispatch(updateCartFromDb(data))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TopNav);

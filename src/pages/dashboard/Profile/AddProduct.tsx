@@ -257,7 +257,7 @@ const AddProduct = (props: any) => {
                         <div className={`${selectedProdTags.length > 0 ? 'px-2 py-1' : 'p-2'} relative w-full ${props.darkMode ? 'bg-Primary_600 !border-none text-Primary_200' : 'bg-white'} cursor-pointer border rounded-md flex gap-3 items-center`}
                             onClick={availableTags.length > 0 ? () => setProdTagsDropdown(prevState => !prevState) : () => Alert('error', 'Select Product category first')}
                         >
-                            <div className={`${selectedProdTags.length > 0  && props.darkMode ? 'text-Primary_200 border-Primary_600' : 'text-Primary' ? 'text-PrimaryActive' : 'text-Primary'} flex gap-3 items-center overflow-x-scroll custom_container w-[85%]`}>
+                            <div className={`${selectedProdTags.length > 0 && props.darkMode ? 'text-Primary_200 border-Primary_600' : 'text-BackDrop_l_lg'} flex gap-3 items-center overflow-x-scroll custom_container w-[85%]`}>
                                 {selectedProdTags.length > 0
                                     ? selectedProdTags.map((item, i) => (
                                         <span key={i} className={`${props.darkMode ? 'border-PrimaryActive' : ''} group border px-3 py-1 whitespace-nowrap text-ellipsis rounded-md flex flex-shrink-0 gap-2 justify-between items-center transition ease-in-out duration-500`}>

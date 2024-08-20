@@ -17,6 +17,7 @@ import Cart from '../pages/dashboard/Cart';
 import Checkout from '../pages/dashboard/Checkout';
 import OrderInvoice from '../pages/dashboard/Checkout/OrderInvoice';
 import ContactUs from '../pages/dashboard/ContactUs';
+import Chat from '../pages/dashboard/ContactUs';
 import Settings from '../pages/dashboard/Settings'
 import Profile from '../pages/dashboard/Profile';
 import AboutMe from '../pages/dashboard/Profile/AboutMe';
@@ -62,7 +63,8 @@ const AppRouter = (props) => {
                     <Route exact path='/dashboard/cart' element={<Cart/>}/>
                     <Route exact path='/dashboard/checkout' element={<Checkout/>}/>
                     <Route exact path='/dashboard/order_invoice' element={<OrderInvoice/>}/>
-                    <Route exact path='/dashboard/contact_us' element={<ContactUs />} />
+                    <Route exact path='/dashboard/contact_us' element={<Chat />} />
+                    {/* <Route exact path='/dashboard/contact_us' element={<ContactUs />} /> */}
                     <Route exact path='/dashboard/settings' element={<Settings />} />
                 </Route>
 

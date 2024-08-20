@@ -130,8 +130,6 @@ const Cart = (props) => {
         }
     ]
 
-    {console.log("accessToken:", props.accessToken)}
-
     const createInvoice = async (reqData: any) => {
         setLoading(true);
         const headers = {
@@ -145,9 +143,11 @@ const Cart = (props) => {
             navigate('/dashboard/checkout', {state: {
                 orderId: res?.data.data.orderId
             }});
+            setLoading(false);
         } else {
             res?.data.message !== undefined && Alert('error', res?.data.message, props.darkMode);
             setLoading(false);
+            setErrorState(true);
         }
     }
 
@@ -159,6 +159,7 @@ const Cart = (props) => {
                 name:  props.userData.firstname+' '+props.userData.lastname,
                 address:  props.userData.address.street+', '+props.userData.address.city+', '+props.userData.address.state,
                 products: props.shopping_cart,
+                currency: props.userData.country.currencySymbol,
                 price: totalPrice
             }
             if(props.userData.address.street === '' || props.userData.address.city === '' || props.userData.address.state === ''){
@@ -172,10 +173,6 @@ const Cart = (props) => {
         }
     }
 
-    // useEffect(() => {
-
-    // }, []);
-
     return (
         <div className='flex flex-col gap-4 py-10 mobile:p-5'>
             <div className='desktop:max-w-6xl max-w-3xl mobile:max-w-full w-full mx-auto'>
@@ -187,12 +184,12 @@ const Cart = (props) => {
             </div>
 
             <div className='text-SecondaryAccent flex tablet:flex-col gap-5 desktop:max-w-6xl max-w-3xl mobile:max-w-full w-full mx-auto'>
-                <div className='w-3/4 tablet:w-full'>
+                <div className={`w-3/4 tablet:w-full overflow-hidden min-h-[30vh] rounded-lg`}>
                     <AppTable
                         columns={columns}
                         data={props.shopping_cart}
                         itemsPerPage={recordsPerPage}
-                        addedStyle={`h-[40vh] ${loading && 'h-[30vh]'}`}
+                        addedStyle={`h-fit ${loading && errorState && 'h-[30vh]'}`}
                         loading={loading}
                         errorState={errorState}
                         // dataLength={TransactionList.length}
@@ -202,7 +199,7 @@ const Cart = (props) => {
                 <div className={`${props.darkMode ? 'bg-Primary_800' : 'bg-Primary_300'} w-1/4 tablet:w-full min-h-[30vh] rounded-lg p-5 flex flex-col justify-between gap-5`}>
                     <div>
                         <PageTitle
-                            pageTitle='Transaction History'
+                            pageTitle='Transaction Summary'
                             pageTitleStyle='!font-semibold !text-xl mobile:!text-lg !text-Primary'
                             style='mb-8 !pb-0'
                         />

@@ -81,17 +81,18 @@ const Checkout = (props) => {
 
     return (
         <div className='flex flex-col gap-4 py-10 mobile:p-5'>
-            <div className='desktop:max-w-6xl max-w-xl mobile:max-w-full w-full mx-auto flex relative'>
-                <div className={`group absolute -left-24 flex items-center w-fit h-auto px-3 py-1 rounded-md cursor-pointer hover:bg-Primary_Accents_md transition ease-in duration-250`}
+            <div className='desktop:max-w-6xl max-w-xl mobile:max-w-full w-full mx-auto relative flex mobile:flex-col items-start gap-5'>
+                <div className={`group -left-24 flex items-center w-fit h-auto px-2 py-1 rounded-md cursor-pointer hover:bg-Primary_Accents_md mobile:bg-Primary_Accents_md transition ease-in duration-250`}
                     onClick={() => navigate(-1)}
                 >
                     <img src={props.darkMode ? leftArrow_w : leftArrow_d} alt='back_button' className='w-4 h-4' />
-                    <p className='font-normal text-sm mobile:text-xs text-Primary group-hover:text-PrimaryActive'>Back</p>
+                    <p className='font-normal text-sm mobile:text-xs text-Primary group-hover:text-Primary_300'>Back</p>
                 </div>
+                
                 <PageTitle
                     pageTitle='Checkout'
                     pageTitleStyle='!font-semibold !text-xl mobile:!text-lg !text-Primary'
-                    style='!mb-12 !pb-0'
+                    style='!mt-0 !mb-12 !pb-0'
                 />
             </div>
 

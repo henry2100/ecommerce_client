@@ -9,6 +9,8 @@ import Button from 'components/atoms/Button';
 import { BASE_URL, getRequest, putRequest } from 'services/http';
 import Alert from 'components/atoms/Alert';
 import Spinner from 'components/atoms/Spinner';
+import leftArrow_d from '../../../assets/svg/arrows/arrow_dl.svg';
+import leftArrow_w from '../../../assets/svg/arrows/arrow_wl.svg';
 
 const OrderInvoice = (props) => {
     const [loading, setLoading] = useState(false);
@@ -45,7 +47,8 @@ const OrderInvoice = (props) => {
 
     useEffect(() => {
         getOrderInvoice();
-    }, [orderID, orderData.status]);
+    }, []);
+// }, [orderID, orderData.status]);
 
     const handlePrint = useReactToPrint({
         content: () => useNewRefEle.current,
@@ -74,8 +77,13 @@ const OrderInvoice = (props) => {
         setLoading(true);
         const res = await putRequest(`${BASE_URL}orders/update/${orderID}`, headers, reqData);
 
-        console.log('update_order_res:', res);
-
+        if (res?.status === 200) {
+            Alert('success', res?.data.message, props.darkMode);
+            setLoading(false);
+        } else {
+            res?.data.message !== undefined && Alert('error', res?.data.message, props.darkMode);
+            setLoading(false);
+        }
     }
 
     const handleConfirmOrder = () => {
@@ -90,11 +98,18 @@ const OrderInvoice = (props) => {
 
     return (
         <div className='flex flex-col gap-4 py-10 mobile:p-5'>
-            <div className='desktop:max-w-6xl max-w-xl mobile:max-w-full w-full mx-auto'>
+            <div className='desktop:max-w-6xl max-w-xl mobile:max-w-full w-full mx-auto relative flex mobile:flex-col items-start gap-5'>
+                <div className={`group -left-24 flex items-center w-fit h-auto px-2 py-1 rounded-md cursor-pointer hover:bg-Primary_Accents_md mobile:bg-Primary_Accents_md transition ease-in duration-250`}
+                    onClick={() => navigate(-1)}
+                >
+                    <img src={props.darkMode ? leftArrow_w : leftArrow_d} alt='back_button' className='w-4 h-4' />
+                    <p className='font-normal text-sm mobile:text-xs text-Primary group-hover:text-Primary_300'>Back</p>
+                </div>
+                
                 <PageTitle
                     pageTitle='Checkout'
                     pageTitleStyle='!font-semibold !text-xl mobile:!text-lg !text-Primary'
-                    style='!mb-12 !pb-0'
+                    style='!mt-0 !mb-12 !pb-0'
                 />
             </div>
 
@@ -110,7 +125,9 @@ const OrderInvoice = (props) => {
                         <PageTitle
                             pageTitle='Order Invoice'
                             pageTitleStyle='!font-semibold !text-xl mobile:!text-lg !text-Primary'
-                            style='!mb-4 !pb-0'
+                            subTitle={orderID}
+                            subTitleStyle={props.darkMode ? 'text-Primary_200' : 'text-Primary'}
+                            style='!mb-4 !pb-0 !gap-0'
                         />
 
                         <span className={`${props.darkMode ? 'border-Primary_700' : ''} flex flex-col gap-1 font-normal border-b pb-1`}>
@@ -143,20 +160,20 @@ const OrderInvoice = (props) => {
                         </span>
 
                         <div className='flex flex-col justify-between gap-5 my-8'>
-                            <div className={`text-Primary_600 flex mobile:flex-col justify-between gap-5 border-b-[.5px]`}>
+                            <div className={`text-Primary_600 flex justify-between gap-5 border-b-[.5px]`}>
                                 <span className='w-2/4 text-left'>
-                                    <p className='font-semibold text-lg'>Product Name</p>
+                                    <p className='text-PrimaryActive font-semibold text-lg'>Product Name</p>
                                 </span>
                                 <span className='w-1/4 text-right'>
-                                    <p className='font-normal text-base'>Quantity</p>
+                                    <p className='text-PrimaryActive font-normal text-base'>Quantity</p>
                                 </span>
                                 <span className='w-1/4 text-right'>
-                                    <p className='font-normal text-base'>Price</p>
+                                    <p className='text-PrimaryActive font-normal text-base'>Price</p>
                                 </span>
                             </div>
 
                             {orderData.products?.map(item => (
-                                <div className={`${props.darkMode ? 'text-Primary_300' : 'text-PrimaryActive'} border-b-[.5px] border-PrimaryActive flex mobile:flex-col justify-between gap-5`}>
+                                <div className={`${props.darkMode ? 'text-Primary_300' : 'text-PrimaryActive'} border-b-[.5px] border-PrimaryActive flex justify-between gap-5`}>
                                     <span className='w-2/4 text-left'>
                                         <p className='font-semibold text-base'>{item.name}</p>
                                     </span>
@@ -170,7 +187,7 @@ const OrderInvoice = (props) => {
                             ))}
                         </div>
 
-                        <div className='flex mobile:flex-col justify-end gap-5'>
+                        <div className='flex justify-end gap-5'>
                             <Button
                                 btnType='button'
                                 btnText='Print'

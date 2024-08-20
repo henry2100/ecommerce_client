@@ -5,12 +5,13 @@ import userIcon from '../../../assets/svg/user_profile.svg';
 import showIcon from '../../../assets/svg/show.svg';
 import hideIcon from '../../../assets/svg/hide.svg';
 import Button from 'components/atoms/Button';
-import { BASE_URL, postRequest } from 'services/http';
+import { BASE_URL, getRequest, postRequest, putRequest } from 'services/http';
 import Alert from 'components/atoms/Alert';
 import Spinner from 'components/atoms/Spinner';
 import { useNavigate } from 'react-router';
 import { connect } from 'react-redux';
-import {storeUserData, setUserLogStatus} from '../../../redux/auth/auth.action';
+import { storeUserData, setUserLogStatus } from '../../../redux/auth/auth.action';
+import { updateCartFromDb } from '../../../redux/app/app.action';
 import { setValues } from 'services/storage';
 
 const Login = (props) => {
@@ -28,16 +29,59 @@ const Login = (props) => {
         "Content-Type": "application/json"
     }
 
+    const updateCart = async (cartId: string, token: string, reqData: any) => {
+        const res = await putRequest(`${BASE_URL}cart/update/${cartId}`, {
+            ...headers,
+            'Authorization': `Bearer ${token}`
+        }, reqData);
+        
+        if (res?.status === 200) {
+            setLoading(false);
+            props.updateCartFromDb(res?.data.data.products);
+        } else {
+            setLoading(false);
+            Alert('error', res?.data.message);
+        }
+    }
+
+    const getUserCart = async (cartId:string, token:string) => {
+        const res = await getRequest(`${BASE_URL}cart/fetch/${cartId}`, {
+            ...headers,
+            'Authorization': `Bearer ${token}`
+        })
+
+        console.log('User Cart:', res);
+
+        if(res?.status === 2000){
+            setLoading(false);
+            props.updateCartFromDb(res?.data.data.products);
+        }else{
+            setLoading(false);
+            Alert('error', res?.data.message);
+        }
+    }
+
     const verifyUser = async (reqData: any) => {
         setLoading(true);
         const res = await postRequest(`${BASE_URL}users/user/login`, headers, reqData);
 
         if (res?.status === 200) {
-            setLoading(false);
             Alert('success', res?.data.message, props.darkMode);
 
-            props.storeUserData({...props.user_authData, ...res?.data});
+            props.storeUserData({ ...props.user_authData, ...res?.data });
             props.setUserLogStatus(true);
+
+            // if (props.shopping_cart.length > 0) {
+                const reqData = {
+                    userId: res?.data.data._id,
+                    products: props.shopping_cart
+                }
+
+                updateCart(res?.data.data.cartId, res?.data.token.accessToken, reqData)
+            // }else{
+                // getUserCart(res?.data.data.cartId, res?.data.token.accessToken);
+            // }
+
             navigate('/dashboard/shop');
         }
 
@@ -132,12 +176,14 @@ const Login = (props) => {
 const mapStateToProps = state => ({
     darkMode: state.app.darkMode,
     user_loggedIn: state.auth.user_loggedIn,
-    user_authData: state.auth.user_authData
+    user_authData: state.auth.user_authData,
+    shopping_cart: state.app?.shopping_cart || []
 });
 
 const mapDispatchToProps = dispatch => ({
     storeUserData: (data) => dispatch(storeUserData(data)),
     setUserLogStatus: (data) => dispatch(setUserLogStatus(data)),
+    updateCartFromDb: (data) => dispatch(updateCartFromDb(data)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

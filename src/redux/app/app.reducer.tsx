@@ -8,7 +8,8 @@ import {
     STORE_TABLE_ITEM,
     SEARCH_QUERY,
     TOGGLE_SEARCH_BOX,
-    RESET_APP_STATE
+    RESET_APP_STATE,
+    UPDATE_CART_STATE_FROM_DB
 } from '../app/app.type';
 
 interface CartItem {
@@ -54,6 +55,12 @@ const AppReducer = (state = APP_INIT_STATE, action: Action): AppState => {
             return {
                 ...state,
                 darkMode: !state.darkMode
+            }
+
+        case UPDATE_CART_STATE_FROM_DB:
+            return {
+                ...state,
+                shopping_cart: action.payload
             }
 
         case CLEAR_CART:

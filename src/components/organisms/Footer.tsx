@@ -67,17 +67,17 @@ const Footer = () => {
 
     const shopLinks = [
         { text: "All Products" },
-        { text: "Fresh Flowers" },
-        { text: "Dried Flowers" },
-        { text: "Live Plants" },
-        { text: "Designer Vases" },
-        { text: "Aroma Candles" },
-        { text: "Freshener Diffuser" }
+        { text: "Mobile Phones" },
+        { text: "Power Banks" },
+        { text: "Generators" },
+        { text: "Smart TVs" },
+        { text: "Phone Accessories" },
+        { text: "Kitchen Appliances" }
     ]
 
     const serviceLinks = [
-        { text: "Flower Subcription" },
-        { text: "Wedding & Event Decor" }
+        { text: "Subcription" },
+        { text: "Warranty" }
     ]
 
     const aboutLinks = [
@@ -115,7 +115,7 @@ const Footer = () => {
                             <span className='flex flex-col gap-4'>
                                 <p className='text_header text-xl mobile:text-lg'>Subscription</p>
                                 <p className='text-base leading-5 text-left'>
-                                    Remember to order beautiful flowers from Kyiv LuxeBouquets Valentines Day, Mothers Day, Christmas... Reminds you 7 days before. No spam or sharing your address
+                                    Remember to order items for loved ones ahead of Valentine's Day, Mothers Day, Christmas,etc. Reminds you 7 days before. No spam or sharing your personal information.
                                 </p>
                             </span>
                             <div>
@@ -239,4 +239,4 @@ const Footer = () => {
     )
 }
 
-export default Footer
+export default Footer;

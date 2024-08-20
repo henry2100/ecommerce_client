@@ -8,6 +8,8 @@ import product_placeholder from '../../../assets/svg/product_placeholder.png';
 import refreshIcon from '../../../assets/svg/refresh.svg';
 import addIcon from '../../../assets/svg/math/math_add.svg';
 import minusIcon from '../../../assets/svg/math/math_minus.svg';
+import callIcon from '../../../assets/svg/navIcons/call_linear.svg';
+import callIconSolid from '../../../assets/svg/navIcons/call_bold.svg';
 import Alert from 'components/atoms/Alert';
 import Button from 'components/atoms/Button';
 import moment from 'moment';
@@ -32,6 +34,7 @@ import RelatedProductItem from 'components/molecules/RelatedProductItem';
 
 interface Product {
     _id: string;
+    sellerId: string,
     name: string;
     description: string;
     price: number;
@@ -106,6 +109,7 @@ const Product = (props: any) => {
     const handleAddToCart = () => {
         const productItem = {
             id: product?._id,
+            sellerId: product?.sellerId,
             name: product?.name,
             category: product?.category,
             currency: product?.currency,
@@ -120,7 +124,7 @@ const Product = (props: any) => {
         props.addToCart(productItem);
     };
 
-    console.log("CartData:", props.shopping_cart);
+    // console.log("productData:", product?.sellerId);
 
     const handleImgSelect = (item: string) => {
         setSelectedImg(item);
@@ -133,12 +137,20 @@ const Product = (props: any) => {
 
     const filteredResult = filterRelatedProducts.filter(itemData => itemData._id !== product?._id);
 
-    console.log("results:", {
-        filterRelatedProducts: filterRelatedProducts,
-        filteredResult: filteredResult
-    });
-
     const randomRelatedProducts = getRandomObjects(filteredResult, 5);
+
+    const handleMessage = () => {
+        navigate('/dashboard/contact_us', {
+            state: {
+                sellerId: product?.sellerId
+            }
+        })
+    }
+
+    const handleAlertMssg = () => {
+        Alert('error', 'You have to sign in to use this feature', props.darkMode)
+        navigate('/auth/login')
+    }
 
     return (
         <div className={`relative desktop:px-32 desktop:py-10 px-16 py-8 mobile:p-3 min-h-[90vh] flex ${loading ? 'justify-center items-center' : 'flex-col justify-between gap-12'}`}>
@@ -175,7 +187,7 @@ const Product = (props: any) => {
                                     className='w-full h-full object-center object-cover scale-105'
                                 />
                             </div>
-                            <div className={`${product && product.imageUrl.length > 0 && product.imageUrl[0] !== '' ? 'flex' : 'hidden'} flex-col tablet:flex-row gap-1 mobile:justify-center items-center`}>
+                            <div className={`${product && product.imageUrl.length > 0 && product.imageUrl[0] !== '' ? 'flex' : 'hidden'} flex-col tablet:flex-row gap-1 mobile:justify-start items-center`}>
                                 {product?.imageUrl?.map((item, i) => (
                                     <div
                                         key={i}
@@ -276,63 +288,75 @@ const Product = (props: any) => {
                                         }
                                     </div>
                                 </div>
-                            </div>
-                            <div className='flex mobile:flex-col gap-5'>
-                                <Button
-                                    btnType='button'
-                                    btnText='Add To Cart'
-                                    btnStyle={`${props.darkMode ? 'bg-Primary_800 text-Primary hover:bg-Primary_700' : 'bg-SecondaryAccent5 text-Primary'} w-3/4 mobile:w-full relative right-0 top-0 z-[22] mb-0 text-sm !rounded-lg truncate flex gap-4 justify-center items-center px-5 py-2 font-normal text-base leading-7 rounded-lg truncate transition ease-in-out duration-250`}
-                                    onClick={handleAddToCart}
-                                />
-                                <Button
-                                    btnType='button'
-                                    btnText='view Cart'
-                                    btnStyle={`${props.darkMode ? 'bg-Primary_600 hover:bg-PrimaryActive' : 'bg-Primary hover:bg-Primary_300'} w-1/4 mobile:w-full relative right-0 top-0 z-[22] mb-0 text-sm !rounded-lg truncate flex gap-4 justify-center items-center px-5 py-2 font-normal text-base leading-7 rounded-lg truncate text-white transition ease-in-out duration-250`}
-                                    onClick={() => navigate('/dashboard/cart')}
-                                />
-                            </div>
+                                <span className='group flex items-center gap-2 font-semibold text-sm mobile:text-xs text-Primary hover:text-Primary_300 border-b-[.5px] border-NoColor hover:border-Primary w-fit cursor-pointer transition ease-in-out duration-250'
+                                    onClick={()=>Alert('info', 'This feature is not yet available')
+                                        // props.user_loggedIn 
+                                        // ?   handleMessage
+                                        // :   handleAlertMssg
+                                    }
+                                >
+                                Contact Seller
+                                <img src={callIcon} alt='contact-seller' className='block group-hover:hidden w-4 h-4 mobile:w-3 mobile:h-4' />
+                                <img src={callIconSolid} alt='contact-seller' className='hidden group-hover:block w-4 h-4 mobile:w-3 mobile:h-4' />
+                            </span>
+                        </div>
+                        <div className='flex gap-5 mobile:gap-3'>
+                            <Button
+                                btnType='button'
+                                btnText='Add To Cart'
+                                btnStyle={`${props.darkMode ? 'bg-Primary_800 text-Primary hover:bg-Primary_700' : 'bg-SecondaryAccent5 text-Primary'} w-3/4 mobile:w-full relative right-0 top-0 z-[22] mb-0 text-sm !rounded-lg truncate flex gap-4 justify-center items-center px-5 py-2 font-normal text-base leading-7 rounded-lg truncate transition ease-in-out duration-250`}
+                                onClick={handleAddToCart}
+                            />
+                            <Button
+                                btnType='button'
+                                btnText='view Cart'
+                                btnStyle={`${props.darkMode ? 'bg-Primary_600 hover:bg-PrimaryActive' : 'bg-Primary hover:bg-Primary_300'} w-1/4 mobile:w-full relative right-0 top-0 z-[22] mb-0 text-sm !rounded-lg truncate flex gap-4 justify-center items-center px-5 py-2 font-normal text-base leading-7 rounded-lg truncate text-white transition ease-in-out duration-250`}
+                                onClick={() => navigate('/dashboard/cart')}
+                            />
                         </div>
                     </div>
+                </div>
 
-                    <div className='flex flex-col gap-5'>
-                        <span className='font-semibold text-lg text-Primary'>
-                            Related Products
-                        </span>
+            <div className='flex flex-col gap-5'>
+                <span className='font-semibold text-lg text-Primary'>
+                    Related Products
+                </span>
 
-                        {product?.category === ''
-                            ? <div className='w-full h-full flex justify-center items-center mobile:p-24'>
-                                <ErrorEmptyState img={true} style='!bg-NoColor' />
-                            </div>
+                {product?.category === ''
+                    ? <div className='w-full h-full flex justify-center items-center mobile:p-24'>
+                        <ErrorEmptyState img={true} style='!bg-NoColor' />
+                    </div>
 
-                            : <div className={`${randomRelatedProducts.length > 3 ? 'justify-center' : randomRelatedProducts.length === 1 ? 'justify-start' : 'justify-evenly'} min-h-[20vh] flex mobile:flex-col items-center gap-10`}>
-                                {randomRelatedProducts.length > 3
-                                    ? <Marquee
-                                        velocity={25}
-                                        direction={'rtl'}
-                                        scatterRandomly={false}
-                                        resetAfterTries={0}
-                                        onInit={() => { }}
-                                        onFinish={() => { }}>
-                                        {randomRelatedProducts.map(item => (
-                                            <RelatedProductItem {...item} getProduct={getProduct} />
-                                        ))}
-                                    </Marquee>
+                    : <div className={`${randomRelatedProducts.length > 3 ? 'justify-center' : randomRelatedProducts.length === 1 ? 'justify-start' : 'justify-evenly'} min-h-[20vh] flex mobile:flex-col items-center gap-10`}>
+                        {randomRelatedProducts.length > 3
+                            ? <Marquee
+                                velocity={25}
+                                direction={'rtl'}
+                                scatterRandomly={false}
+                                resetAfterTries={0}
+                                onInit={() => { }}
+                                onFinish={() => { }}>
+                                {randomRelatedProducts.map(item => (
+                                    <RelatedProductItem {...item} getProduct={getProduct} />
+                                ))}
+                            </Marquee>
 
-                                    : randomRelatedProducts.map(item => (
-                                        <RelatedProductItem {...item} getProduct={getProduct} />
-                                    ))
-                                }
-                            </div>
+                            : randomRelatedProducts.map(item => (
+                                <RelatedProductItem {...item} getProduct={getProduct} />
+                            ))
                         }
                     </div>
-                </>
+                }
+            </div>
+        </>
             }
-        </div>
+        </div >
     );
 };
 
 const mapStateToProps = (state: any) => ({
     authData: state.auth.user_authData,
+    user_loggedIn: state.auth.user_loggedIn,
     darkMode: state.app.darkMode,
     shopping_cart: state.app?.shopping_cart || []
 });
