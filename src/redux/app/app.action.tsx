@@ -8,12 +8,18 @@ import {
     STORE_TABLE_ITEM,
     SEARCH_QUERY,
     TOGGLE_SEARCH_BOX,
-    RESET_APP_STATE
+    RESET_APP_STATE,
+    UPDATE_CART_STATE_FROM_DB
 } from './app.type';
 
 export const toggleDarkMode = () => ({
     type: DARK_MODE
 });
+
+export const updateCartFromDb = (data: any[]) => ({
+    type:UPDATE_CART_STATE_FROM_DB,
+    payload: data
+})
 
 export const addToCart = (data: any[]) => ({
     type: ADD_TO_CART,

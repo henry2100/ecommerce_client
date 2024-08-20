@@ -19,7 +19,7 @@ const CartItem = (props: any) => {
     }, [counter]);
 
     return (
-        <div className={`group ${props.darkMode ? 'text-slate-500 bg-Primary_800 hover:bg-Primary_Accents_xs' : 'text-PrimaryActive bg-white hover:bg-Primary_Accents_xl'} ${props.className} transition ease-in-out duration-250 group flex items-center gap-3 p-4 w-full shadow-custom_border cursor-pointer`}>
+        <div className={`group ${props.darkMode ? 'text-slate-500 bg-Primary_800' : 'text-PrimaryActive bg-white'} ${props.className} hover:bg-Primary_Accents_xs transition ease-in-out duration-250 group flex items-center gap-3 p-4 w-full shadow-custom_border cursor-pointer`}>
             <span className='w-[50px] h-[50px] rounded-md overflow-hidden'>
                 <img src={props?.productImg} alt='' className='w-full h-full object-cover object-center' />
             </span>

@@ -98,8 +98,8 @@ const OrderInvoice = (props) => {
 
     return (
         <div className='flex flex-col gap-4 py-10 mobile:p-5'>
-            <div className='desktop:max-w-6xl max-w-xl mobile:max-w-full w-full mx-auto relative flex items-start gap-5'>
-                <div className={`group -left-24 flex items-center w-fit h-auto px-3 py-1 rounded-md cursor-pointer hover:bg-Primary_Accents_md transition ease-in duration-250`}
+            <div className='desktop:max-w-6xl max-w-xl mobile:max-w-full w-full mx-auto relative flex mobile:flex-col items-start gap-5'>
+                <div className={`group -left-24 flex items-center w-fit h-auto px-2 py-1 rounded-md cursor-pointer hover:bg-Primary_Accents_md mobile:bg-Primary_Accents_md transition ease-in duration-250`}
                     onClick={() => navigate(-1)}
                 >
                     <img src={props.darkMode ? leftArrow_w : leftArrow_d} alt='back_button' className='w-4 h-4' />
@@ -160,7 +160,7 @@ const OrderInvoice = (props) => {
                         </span>
 
                         <div className='flex flex-col justify-between gap-5 my-8'>
-                            <div className={`text-Primary_600 flex mobile:flex-col justify-between gap-5 border-b-[.5px]`}>
+                            <div className={`text-Primary_600 flex justify-between gap-5 border-b-[.5px]`}>
                                 <span className='w-2/4 text-left'>
                                     <p className='text-PrimaryActive font-semibold text-lg'>Product Name</p>
                                 </span>
@@ -173,7 +173,7 @@ const OrderInvoice = (props) => {
                             </div>
 
                             {orderData.products?.map(item => (
-                                <div className={`${props.darkMode ? 'text-Primary_300' : 'text-PrimaryActive'} border-b-[.5px] border-PrimaryActive flex mobile:flex-col justify-between gap-5`}>
+                                <div className={`${props.darkMode ? 'text-Primary_300' : 'text-PrimaryActive'} border-b-[.5px] border-PrimaryActive flex justify-between gap-5`}>
                                     <span className='w-2/4 text-left'>
                                         <p className='font-semibold text-base'>{item.name}</p>
                                     </span>
@@ -187,7 +187,7 @@ const OrderInvoice = (props) => {
                             ))}
                         </div>
 
-                        <div className='flex mobile:flex-col justify-end gap-5'>
+                        <div className='flex justify-end gap-5'>
                             <Button
                                 btnType='button'
                                 btnText='Print'

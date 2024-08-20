@@ -159,6 +159,7 @@ const Cart = (props) => {
                 name:  props.userData.firstname+' '+props.userData.lastname,
                 address:  props.userData.address.street+', '+props.userData.address.city+', '+props.userData.address.state,
                 products: props.shopping_cart,
+                currency: props.userData.country.currencySymbol,
                 price: totalPrice
             }
             if(props.userData.address.street === '' || props.userData.address.city === '' || props.userData.address.state === ''){
@@ -188,7 +189,7 @@ const Cart = (props) => {
                         columns={columns}
                         data={props.shopping_cart}
                         itemsPerPage={recordsPerPage}
-                        addedStyle={`h-[40vh] ${loading && errorState && 'h-[30vh]'}`}
+                        addedStyle={`h-fit ${loading && errorState && 'h-[30vh]'}`}
                         loading={loading}
                         errorState={errorState}
                         // dataLength={TransactionList.length}
@@ -198,7 +199,7 @@ const Cart = (props) => {
                 <div className={`${props.darkMode ? 'bg-Primary_800' : 'bg-Primary_300'} w-1/4 tablet:w-full min-h-[30vh] rounded-lg p-5 flex flex-col justify-between gap-5`}>
                     <div>
                         <PageTitle
-                            pageTitle='Transaction History'
+                            pageTitle='Transaction Summary'
                             pageTitleStyle='!font-semibold !text-xl mobile:!text-lg !text-Primary'
                             style='mb-8 !pb-0'
                         />

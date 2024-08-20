@@ -104,6 +104,7 @@ const MyProducts = (props: any) => {
                 currentPage={currentPage}
                 totalPages={totalPages}
                 totalData={products.length}
+                itemsPerPage={recordsPerPage}
                 onPageChange={handlePageChange}
             />}
         </div>

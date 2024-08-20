@@ -114,6 +114,7 @@ const Home = (props: any) => {
                 currentPage={currentPage}
                 totalPages={totalPages}
                 totalData={filteredData.length}
+                itemsPerPage={recordsPerPage}
                 onPageChange={handlePageChange}
             />}
         </div>

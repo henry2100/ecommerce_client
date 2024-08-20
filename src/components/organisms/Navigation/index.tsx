@@ -30,13 +30,14 @@ import useWindowSize from '../../atoms/WindowWidth';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { setUserLogStatus } from '../../../redux/auth/auth.action';
-import { toggleDarkMode, toggleSearchBar } from '../../../redux/app/app.action';
+import { toggleDarkMode, toggleSearchBar, updateCartFromDb } from '../../../redux/app/app.action';
 import { handleLogout } from 'utils';
 import SearchBox from 'components/molecules/SearchBox';
 import CartDropdown from 'pages/dashboard/ModalComponents/CartDropdown';
 import DropdownCard from 'components/atoms/DropdownCard';
 import Toggle from 'components/atoms/Toggle';
 import Alert from 'components/atoms/Alert';
+import { BASE_URL, putRequest } from 'services/http';
 
 interface Props {
     darkMode: boolean;
@@ -46,6 +47,7 @@ interface Props {
     shopping_cart: any[];
     toggleSearchBar: () => void;
     toggleDarkMode: () => void;
+    updateCartFromDb: (e: any) => void;
 }
 
 const TopNav: React.FC<Props> = (props) => {
@@ -60,16 +62,44 @@ const TopNav: React.FC<Props> = (props) => {
 
     const currentPath = location.pathname.split('/')[2];
 
+    const headers = {
+        "Content-Type": "application/json"
+    }
+
     const userStatus = props.loggedIn;
     const userProfileImg = props.authData?.data?.imageUrl;
 
-    const { navMenuItems } = navMenu(userStatus, handleLogout);
+    console.log("Cart:", props.shopping_cart);
+
+
+    const updateCart = async (cartId: string, token: string, reqData: any) => {
+        const res = await putRequest(`${BASE_URL}cart/update/${cartId}/logout`, {
+            ...headers,
+            'Authorization': `Bearer ${token}`
+        }, reqData);
+
+        if (res?.status === 200) {
+            props.updateCartFromDb([...res?.data.data.products]);
+        } else {
+            Alert('error', res?.data.message);
+        }
+    }
+
+    const logoutSequence = () => {
+        updateCart(props?.authData?.data.cartId, props?.authData?.token.accessToken, {
+            userId: props?.authData?.data._id,
+            products: props?.shopping_cart
+        })
+        handleLogout();
+    }
+
+    const { navMenuItems } = navMenu(userStatus, logoutSequence);
     const { windowWidth } = useWindowSize();
 
     const navData = [
         { navItem: 'Home', action: null, style: `${userStatus ? 'hidden' : 'flex'}`, icon1: homeIconSolid, icon2: homeIcon, available: true },
         { navItem: 'Shop', action: null, style: `${userStatus ? 'flex' : 'hidden'}`, icon1: shopIconSolid, icon2: shopIcon, available: true },
-        { navItem: 'Contact Us', action: null, style: 'flex', icon1: contactIconSolid, icon2: contactIcon, available: true },
+        // { navItem: 'Contact Us', action: null, style: 'flex', icon1: contactIconSolid, icon2: contactIcon, available: true },
         { navItem: 'Search', action: () => props.toggleSearchBar(), style: 'flex', icon1: searchIconSolid, icon2: searchIcon, available: true },
     ];
 
@@ -135,10 +165,13 @@ const TopNav: React.FC<Props> = (props) => {
         }, 1000);
     }, [props.shopping_cart]);
 
+    console.log('shopping_cart:', props.shopping_cart);
+
+
     return (
         <div className={`relative z-[25] flex justify-between items-center gap-5 ${props.showSearch ? 'px-5 py-4' : 'p-5'}`}>
             <div className='desktop:w-1/10 desktop:mx-20 nav_title_text cursor-pointer flex items-center gap-3' onClick={() => navigate(`/dashboard/${userStatus ? 'shop' : 'home'}`)}>
-                <span className='flex-shrink-0 flex-grow-0 w-10 h-10'>
+                <span className='flex-shrink-0 flex-grow-0 w-10 h-10 mobile:w-7 mobile:h-7'>
                     <img src={userStatus
                         ? userProfileImg
                             ? userProfileImg
@@ -146,7 +179,7 @@ const TopNav: React.FC<Props> = (props) => {
                         : user_placeholder}
                         alt='user_profile' className='w-full h-full object-cover object-center object-fit rounded-full' />
                 </span>
-                <p className='nav_title_text text-Primary !font-bold !text-lg'>Empire</p>
+                <p className='nav_title_text text-Primary !font-bold text-lg mobile:text-base'>Empire</p>
             </div>
 
             <span className='desktop:max-w-3/4 desktop:w-full w-fit desktop:mx-20 flex justify-end items-center gap-5'>
@@ -162,9 +195,9 @@ const TopNav: React.FC<Props> = (props) => {
                     </span>
                 )}
 
-                <img src={props.darkMode ? moonIcon : sunIcon} alt='weather_icon' className={`${props.showSearch ? 'mobile:hidden block' : 'block'} w-5 h-5 cursor-pointer`} onClick={props.toggleDarkMode} />
+                <img src={props.darkMode ? moonIcon : sunIcon} alt='weather_icon' className={`${props.showSearch ? 'mobile:hidden block' : 'block'} mobile:hidden w-5 h-5 cursor-pointer`} onClick={props.toggleDarkMode} />
 
-                <div className='desktop:relative  ml-8 mobile:ml-0 mr-0' onClick={() => setShowCartModal(prevState => !prevState)}>
+                <div className='desktop:relative ml-8 mobile:hidden mr-0' onClick={() => setShowCartModal(true)}>
                     <div className={`${props.showSearch ? 'mobile:hidden flex' : 'flex'} group items-center gap-2 group transition ease-in-out duration-250 cursor-pointer ${props.darkMode ? 'bg-Primary_600 hover:bg-Primary_700' : 'bg-slate-100 hover:bg-Primary_300'} py-1 px-5 rounded-md`} >
                         <span className={`${cartNotifyer ? 'w-[24px] h-[24px] text-Accent_blue font-bold text-base mobile:text-sm' : 'w-5 h-5 text-Primary font-semibold text-sm mobile:text-xs'} rounded-full !bg-NoColor flex justify-center items-center`}>
                             {props.shopping_cart.length}
@@ -197,7 +230,7 @@ const TopNav: React.FC<Props> = (props) => {
                 </nav>
                 <div className='w-fit relative'>
                     <div
-                        className={`${props.darkMode ? `${showModal || dropdown && '!bg-PrimaryActive'} bg-Primary_600 text-Primary hover:bg-Primary_Accents_sm` : `${showModal || dropdown && '!bg-slate-300'} bg-slate-100 text-slate-500 hover:bg-slate-300`} px-5 py-1 flex justify-center items-center flex-shrink-0 gap-3 rounded-md cursor-pointer transition ease-in-out duration-250 relative z-10`}
+                        className={`${props.darkMode ? `${showModal || dropdown && '!bg-PrimaryActive'} bg-Primary_600 text-Primary hover:bg-Primary_Accents_sm` : `${showModal || dropdown && '!bg-slate-300'} bg-slate-100 text-slate-500 hover:bg-slate-300`} px-5 py-1 mobile:p-0 mobile:bg-NoColor flex justify-center items-center flex-shrink-0 gap-3 rounded-md cursor-pointer transition ease-in-out duration-250 relative z-10`}
                         onClick={() => {
                             if (windowWidth > 1199) {
                                 setDropdown(true);
@@ -206,9 +239,9 @@ const TopNav: React.FC<Props> = (props) => {
                             }
                         }}
                     >
-                        <img src={showModal || dropdown ? arrow_up_d : arrow_down_d} alt='more_icon' className='block tablet:hidden w-4 h-4 cursor-pointer' />
-                        <img src={navMenuIcon} alt='more_icon' className='hidden tablet:block w-4 h-4 cursor-pointer' />
-                        <p>More</p>
+                        <img src={showModal || dropdown ? arrow_up_d : arrow_down_d} alt='more_icon' className='block tablet:hidden w-4 h-4 mobile:w-6 mobile:h-6 cursor-pointer' />
+                        <img src={navMenuIcon} alt='more_icon' className='hidden tablet:block w-4 h-4 mobile:w-6 mobile:h-6 cursor-pointer' />
+                        <p className='block mobile:hidden'>More</p>
                     </div>
 
                     {dropdown &&
@@ -247,7 +280,8 @@ const mapStateToProps = (state: any) => ({
 const mapDispatchToProps = (dispatch: any) => ({
     toggleSearchBar: () => dispatch(toggleSearchBar()),
     setUserLogStatus: (data) => dispatch(setUserLogStatus(data)),
-    toggleDarkMode: () => dispatch(toggleDarkMode())
+    toggleDarkMode: () => dispatch(toggleDarkMode()),
+    updateCartFromDb: (data) => dispatch(updateCartFromDb(data))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TopNav);

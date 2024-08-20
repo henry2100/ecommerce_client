@@ -4,6 +4,8 @@ import userDefaultIcon from '../../../assets/svg/navIcons/navMenuIcons/user_line
 import userIcon_w from '../../../assets/svg/user-white.svg';
 import userIcon_d from '../../../assets/svg/user-black.svg';
 import user_placeholder from '../../../assets/svg/User_2.svg';
+import cartIcon_solid from '../../../assets/svg/navIcons/shopping-cart-solid.svg';
+import cartIcon_linear from '../../../assets/svg/navIcons/shopping-cart-linear.svg';
 import sunIcon from '../../../assets/svg/sun.svg';
 import moonIcon from '../../../assets/svg/moon.svg';
 import Toggle from '../../atoms/Toggle';
@@ -43,7 +45,7 @@ const MobileNav = (props) => {
             closeBtnStyle='hidden'
         >
             <div className='flex flex-col gap-8 h-full'>
-                <div className='flex items-center gap-2 p-5 py-3 border-b border-Primary_200'>
+                <div className='flex items-center gap-2 p-5 py-3 border-b-[.5px] border-Primary_200'>
                     <span className='w-10 h-10 rounded-full overflow-hidden flex-shrink-0'>
                         <img src={userStatus
                             ? userProfileImg
@@ -59,22 +61,40 @@ const MobileNav = (props) => {
                         }
                     </span>
                 </div>
+
                 <div className='flex flex-col gap-5 justify-between h-full px-5 pt-2 pb-12'>
-                    <div className={`${props.darkMode ? 'bg-Primary_600' : 'bg-PrimaryDisabled'} flex flex-col gap-1 overflow-hidden rounded-md p-3`}>
-                        {navMenuItems.map((item, i) => (
-                            <span
-                                key={i}
-                                onClick={item.navFunc === null
-                                    ? (e) => handleSideNavClick(e, item)
-                                    : item.navFunc
-                                }
-                                className={`${props.darkMode ? 'text-Primary hover:text-PrimaryDisabled hover:bg-PrimaryActive' : 'text-PrimaryActive hover:bg-slate-400 hover:text-white'} flex items-center gap-3 group rounded-md font-normal text-base px-5 py-2 transition-all cursor-pointer  ${item.style}`}
-                            >
-                                {item.icon1 && <img src={item.icon1} alt='menu_icon' className={`hidden group-hover:block w-4 h-4 mobile:w-5 mobile:h-5 `} />}
-                                {item.icon2 && <img src={item.icon2} alt='menu_icon' className={`block group-hover:hidden w-4 h-4 mobile:w-5 mobile:h-5 `} />}
-                                {item.navItem}
+                    <div className='flex flex-col gap-5'>
+                        <div className={`${props.darkMode ? 'bg-Primary_600 text-Primary' : 'bg-PrimaryDisabled text-PrimaryActive'} flex justify-between items-center gap-3 group text-slate-500 rounded-md px-5 py-2 desktop:relative`}
+                            onClick={() => {
+                                navigate('/dashboard/cart');
+                                props.setShowModal(false);
+                            }}
+                        >
+                            <span className={`${props.darkMode ? 'text-Primary hover:text-PrimaryDisabled hover:bg-PrimaryActive' : 'text-PrimaryActive hover:bg-slate-400 hover:text-white'} flex items-center gap-3 group rounded-md font-normal text-base px-5 py-2 transition-all cursor-pointer flex-shrink-0`}>
+                                <img src={cartIcon_linear} alt='cart-icon' className='block group-hover:hidden w-6 h-6 transition ease-in-out duration-250' />
+                                <img src={cartIcon_solid} alt='cart-icon' className='hidden group-hover:block w-6 h-6 transition ease-in-out duration-250' />
+                                Cart
                             </span>
-                        ))}
+                            <span className={`w-5 h-5 text-Primary font-semibold text-lg mobile:text-base rounded-full !bg-NoColor flex justify-center items-center`}>
+                                {props.shopping_cart.length}
+                            </span>
+                        </div>
+                        <div className={`${props.darkMode ? 'bg-Primary_600' : 'bg-PrimaryDisabled'} flex flex-col gap-1 overflow-hidden rounded-md p-3`}>
+                            {navMenuItems.map((item, i) => (
+                                <span
+                                    key={i}
+                                    onClick={item.navFunc === null
+                                        ? (e) => handleSideNavClick(e, item)
+                                        : item.navFunc
+                                    }
+                                    className={`${props.darkMode ? 'text-Primary hover:text-PrimaryDisabled hover:bg-PrimaryActive' : 'text-PrimaryActive hover:bg-slate-400 hover:text-white'} flex items-center gap-3 group rounded-md font-normal text-base px-5 py-2 transition-all cursor-pointer  ${item.style}`}
+                                >
+                                    {item.icon1 && <img src={item.icon1} alt='menu_icon' className={`hidden group-hover:block w-4 h-4 mobile:w-5 mobile:h-5 `} />}
+                                    {item.icon2 && <img src={item.icon2} alt='menu_icon' className={`block group-hover:hidden w-4 h-4 mobile:w-5 mobile:h-5 `} />}
+                                    {item.navItem}
+                                </span>
+                            ))}
+                        </div>
                     </div>
                     <div className={`${props.darkMode ? 'bg-Primary_600' : 'bg-PrimaryDisabled'} bg-PrimaryDisabled flex justify-between items-center gap-3 group text-slate-500 rounded-md px-5 py-2`}>
                         <span className={`${props.darkMode ? 'text-Primary' : 'text-PrimaryActive'} font-normal text-base`}>
@@ -98,7 +118,8 @@ const MobileNav = (props) => {
 const mapStateToProps = state => ({
     userLoggedIn: state.auth.user_loggedIn,
     userData: state.auth?.user_authData,
-    darkMode: state.app.darkMode
+    darkMode: state.app.darkMode,
+    shopping_cart: state.app?.shopping_cart || []
 })
 
 const mapDispatchToProps = dispatch => ({

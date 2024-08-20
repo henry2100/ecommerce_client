@@ -36,11 +36,11 @@ const CartDropdown = (props: Props) => {
                     </span>
                 }
             </div>
-            <div className={`${props?.shopping_cart.length === 0 ? 'hidden' : 'block'} bg-Primary_600 flex gap-5 p-3`}>
+            <div className={`${props?.shopping_cart.length === 0 ? 'hidden' : 'block'} ${props.darkMode ? 'bg-Primary_700' : 'bg-Primary_200'} flex gap-5 p-3`}>
                 <Button
                     btnType='button'
                     btnText='Open Cart'
-                    btnStyle={`${props.darkMode ? 'bg-Primary_800 text-Primary hover:bg-Primary_700' : 'bg-SecondaryAccent5 text-Primary'} w-3/4 mobile:w-full relative right-0 top-0 z-[22] mb-0 text-sm !rounded-lg truncate flex gap-4 justify-center items-center px-5 py-2 font-normal text-base leading-7 rounded-lg truncate transition ease-in-out duration-250`}
+                    btnStyle={`${props.darkMode ? 'bg-Primary_800 text-Primary hover:bg-Primary_700' : 'bg-Primary_300 text-Primary'} w-3/4 mobile:w-full relative right-0 top-0 z-[22] mb-0 text-sm !rounded-lg truncate flex gap-4 justify-center items-center px-5 py-2 font-normal text-base leading-7 rounded-lg truncate transition ease-in-out duration-250`}
                     onClick={() => {
                         navigate('/dashboard/cart')
                         props.setShowCartModal(false)
@@ -49,7 +49,7 @@ const CartDropdown = (props: Props) => {
                 <Button
                     btnType='button'
                     btnText='Clear'
-                    btnStyle={`${props.darkMode ? 'bg-Primary_700 hover:bg-PrimaryActive' : 'bg-Primary hover:bg-Primary_300'} w-1/4 mobile:w-full relative right-0 top-0 z-[22] mb-0 text-sm !rounded-lg truncate flex gap-4 justify-center items-center px-5 py-2 font-normal text-base leading-7 rounded-lg truncate text-white transition ease-in-out duration-250`}
+                    btnStyle={`${props.darkMode ? 'bg-Primary_800 hover:bg-PrimaryActive' : 'bg-Primary hover:bg-Primary_300'} w-1/4 mobile:w-full relative right-0 top-0 z-[22] mb-0 text-sm !rounded-lg truncate flex gap-4 justify-center items-center px-5 py-2 font-normal text-base leading-7 rounded-lg truncate text-white transition ease-in-out duration-250`}
                     onClick={() => props.clearShoppingCart()}
                 />
             </div>

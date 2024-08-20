@@ -63,6 +63,7 @@ const AppTable: React.FC<TableProps> = ({ columns, data, itemsPerPage, loading, 
         currentPage={currentPage}
         totalPages={totalPages}
         totalData={dataLength ? dataLength : data.length}
+        itemsPerPage={itemsPerPage}
         onPageChange={handlePageChange}
       />}
     </div>
