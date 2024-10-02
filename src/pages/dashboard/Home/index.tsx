@@ -60,8 +60,8 @@ const Home = (props: any) => {
 
     const indexOfLastItem = currentPage * recordsPerPage;
     const indexOfFirstItem = indexOfLastItem - recordsPerPage;
-    const totalPages = Math.ceil(filteredData.length / recordsPerPage);
-    const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredData?.length / recordsPerPage);
+    const currentData = filteredData?.slice(indexOfFirstItem, indexOfLastItem);
 
     const getCurrentPage = (pageNumber) => {
         setPageNum(pageNumber);
