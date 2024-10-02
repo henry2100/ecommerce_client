@@ -4,7 +4,8 @@ import { handleException } from 'utils';
 
 const userLoggedIn = getValues("loggedIn")
 export const username = getValues('username')
-export const BASE_URL = `${process.env.REACT_APP_TEST_BASE_URL}` //TEST_URL
+export const BASE_URL = `${process.env.REACT_APP_PROD_BASE_URL}` //PRODUCTION_BASE_URL
+// export const BASE_URL = `${process.env.REACT_APP_TEST_BASE_URL}` //TEST_BASE_URL
 
 export const getRequest = async (url: any, headers?:any) => {
     try {
